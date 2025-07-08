@@ -6,6 +6,7 @@ network:{
 name:{
     type:String
 },
+//סמל מוסד
 institutionSymbol:{
 type:String,
 required:true
