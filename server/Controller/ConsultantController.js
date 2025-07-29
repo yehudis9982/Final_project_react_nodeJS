@@ -15,11 +15,11 @@ const addConsultant=async (req,res)=>{
  }
 //מחיקת יועצת
 const deleteConsultant=async (req,res)=>{
-    const{_id}=req.body
+    const{_id}=req.params
     const consultant=await Consultant.findById(_id).exec()
     if(!consultant){ return res.status(400).json({"message":"no consultant found!"})}
     await consultant.deleteOne()
-   res.json( `Consultant: ${consultant.name} id: ${consultant._id} deleted`)
+   res.json( `Consultant: ${consultant.firstName} id: ${consultant._id} deleted`)
 }
 //עדכון יועצת
 const updateConsultant=async(req,res)=> {

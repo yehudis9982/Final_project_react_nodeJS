@@ -5,7 +5,6 @@ consultant:{
  type:mongoose.Schema.Types.ObjectId,
  ref:"Consultant"
 },
-task:[Task.schema],
 kindergartens:[{ type: mongoose.Schema.Types.ObjectId, ref: "Kindergarten" }],
 firstName:{
     type:String,

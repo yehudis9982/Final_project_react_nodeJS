@@ -15,11 +15,11 @@ const addTask=async (req,res)=>{
  }
 //מחיקת משימה
 const deleteTask=async (req,res)=>{
-    const{_id}=req.body
+    const{_id}=req.params
     const task=await Task.findById(_id).exec()
     if(!task){ return res.status(400).json({"message":"no task found!"})}
     await task.deleteOne()
-   res.json( `Task: ${task.name} id: ${task._id} deleted`)
+   res.json( `Task: ${task.title} id: ${task._id} deleted`)
 }
 //עדכון משימה
 const updateTask=async(req,res)=> {

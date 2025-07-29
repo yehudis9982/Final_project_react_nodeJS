@@ -8,14 +8,14 @@ const getAllKindergarten=async(req,res)=>{
 const addKindergarten=async (req,res)=>{
     const{institutionSymbol,address,kindergartenTeacherName,phone,age}=req.body
     if(!institutionSymbol||!address||!kindergartenTeacherName||!phone||!age){return res.status(400).json({"message":"you didnt sent everything that is required!"})}
-    if(await kindergarten.findOne({institutionSymbol:institutionSymbol}).exec())
+    if(await Kindergarten.findOne({institutionSymbol:institutionSymbol}).exec())
         return res.status(400).send("institutionSymbol needs to be uniqe!")
    const kindergarten=await Kindergarten.create({institutionSymbol,address,kindergartenTeacherName,phone,age})
    res.json(kindergarten)
  }
 //מחיקת גן
 const deleteKindergarten=async (req,res)=>{
-    const{_id}=req.body
+    const{_id}=req.params
     const kindergarten=await Kindergarten.findById(_id).exec()
     if(!kindergarten){ return res.status(400).json({"message":"no kindergarten found!"})}
     await kindergarten.deleteOne()

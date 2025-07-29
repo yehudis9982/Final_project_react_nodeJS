@@ -15,7 +15,7 @@ address:{
     city:String,
     street:String,
     bildingNumber:Number,
-    zipCode:{type:String, required:true}
+    zipCode:{type:String,required:true}
    
 },
 kindergartenTeacherName:{
