@@ -1,4 +1,5 @@
 const mongoose=require("mongoose")
+const Task = require('./Task');
 const ConsultantSchema=new mongoose.Schema({
 firstName:{
     type:String,
@@ -26,7 +27,7 @@ email:{
     type:String,
     required:true
 },
-task:[TaskSchema],
+task:[Task.schema],
 kindergartens:[{ type: mongoose.Schema.Types.ObjectId, ref: "Kindergarten" }],
 roles:{
     type:String,

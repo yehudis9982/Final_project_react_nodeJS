@@ -5,13 +5,13 @@ const getAllConsultant=async(req,res)=>{
     res.json(consultant)
 }
 //הוספת יועצת
-const addConsultantr=async (req,res)=>{
-    const{firstName,lastrName,email,password,phone,tz}=req.body
-    if(!firstName||!lastrName||!email||!password||!phone||!tz){return res.status(400).json({"message":"you didnt sent everything that is required!"})}
-    if(await Consultantr.findOne({tz:tz}).exec())
+const addConsultant=async (req,res)=>{
+    const{firstName,lastName,email,password,phone,tz}=req.body
+    if(!firstName||!lastName||!email||!password||!phone||!tz){return res.status(400).json({"message":"you didnt sent everything that is required!"})}
+    if(await Consultant.findOne({tz:tz}).exec())
         return res.status(400).send("tz needs to be uniqe!")
-   const consultantr=await Consultantr.create({firstName,lastrName,email,password,phone,tz})
-   res.json(consultantr)
+   const consultant=await Consultant.create({firstName,lastName,email,password,phone,tz})
+   res.json(consultant)
  }
 //מחיקת יועצת
 const deleteConsultant=async (req,res)=>{
@@ -23,13 +23,13 @@ const deleteConsultant=async (req,res)=>{
 }
 //עדכון יועצת
 const updateConsultant=async(req,res)=> {
-    const {firstName,lastrName,email,password,phone,tz}=req.body
-    if(!firstName||!lastrName||!email||!password||!phone||!tz) {return res.status(400).json({"message":"you didnt sent everything that is required!"})}
+    const {firstName,lastName,email,password,phone,tz}=req.body
+    if(!firstName||!lastName||!email||!password||!phone||!tz) {return res.status(400).json({"message":"you didnt sent everything that is required!"})}
     const{_id}=req.params    
     const consultant=await Consultant.findById(_id)
     if(!consultant){ return res.status(400).json({"message":"no consultant found!"})}
     consultant.firstName=firstName
-    consultant.lastName=lastrName
+    consultant.lastName=lastName
     consultant.password=password
     consultant.tz=tz
     consultant.email=email
@@ -44,4 +44,4 @@ const getConsultantByID=async(req,res)=>{
     if(!consultant){ return res.status(400).json({"message":"no consultant found!"})}
     res.json(consultant)
 }
-module.exports={addConsultantr,deleteConsultant,updateConsultant,getAllConsultant,getConsultantByID}
+module.exports={addConsultant,deleteConsultant,updateConsultant,getAllConsultant,getConsultantByID}

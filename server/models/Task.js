@@ -9,4 +9,4 @@ body:{
 },
 
 },{ timestamps:true})
-module.exports=TaskSchema
+module.exports=mongoose.model("Task",TaskSchema)

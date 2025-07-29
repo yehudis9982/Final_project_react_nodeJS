@@ -8,15 +8,15 @@ name:{
 },
 //סמל מוסד
 institutionSymbol:{
-type:String,
-required:true
+  type:String,
+  required:true
 },
 address:{
     city:String,
     street:String,
     bildingNumber:Number,
-    zipCode:String,
-    required:true
+    zipCode:{type:String, required:true}
+   
 },
 kindergartenTeacherName:{
 type:String,

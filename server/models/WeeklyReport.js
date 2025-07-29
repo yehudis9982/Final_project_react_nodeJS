@@ -1,10 +1,11 @@
 const mongoose=require("mongoose")
+const Task = require('./Task');
 const WeeklyReportSchema=new mongoose.Schema({
 consultant:{
  type:mongoose.Schema.Types.ObjectId,
  ref:"Consultant"
 },
-task:[TaskSchema],
+task:[Task.schema],
 kindergartens:[{ type: mongoose.Schema.Types.ObjectId, ref: "Kindergarten" }],
 firstName:{
     type:String,
@@ -16,7 +17,7 @@ lastName:{
 },
 tz:{
     type:String,
-    require:true,
+    required:true,
     maxLength:9,
     immutable:true
 },
@@ -32,7 +33,7 @@ email:{
     type:String,
     required:true
 },
-task:[TaskSchema],
+task:[Task.schema],
 kindergartens:[{ type: mongoose.Schema.Types.ObjectId, ref: "Kindergarten" }],
 roles:{
     type:String,
