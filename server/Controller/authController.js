@@ -12,7 +12,17 @@ if(!foundConsultant){
 }
 const mutch=await bcrypt.compare(password,foundConsultant.password)
 if(!mutch)return res.status(401).json({message:"Unauthorized"})
-res.send("Logged In")
+//אוביקט המכיל את הפרטים ללא הסיסמא
+const consultantInfo={
+_id:foundConsultant._id,
+name:foundConsultant.firstName,
+roles:foundConsultant.roles,
+tz:foundConsultant.tz,
+email:foundConsultant.email,
+phone:foundConsultant.phone
+}
+const accessToken=jwt.sign(consultantInfo,process.env.ACCESS_TOKEN_SECRET)
+res.json({accessToken})
 }
 // פונקציית הרשמה למערכת
 const register=async(req,res)=>{
