@@ -7,6 +7,9 @@ title:{
 body:{
     type:String
 },
-
+consultant:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Consultant"
+},
 },{ timestamps:true})
 module.exports=mongoose.model("Task",TaskSchema)

@@ -1,6 +1,10 @@
 const express=require("express")
 const router=express.Router()
-const ConsultantController=require("../controller/ConsultantController")
+const ConsultantController=require("../Controller/ConsultantController")
+const verifyJWT=require("../middleware/verifyJWT")
+
+router.use(verifyJWT)
+
 router.get("/",ConsultantController.getAllConsultant)
 router.get("/:_id",ConsultantController.getConsultantByID)
 router.put("/:_id",ConsultantController.updateConsultant)

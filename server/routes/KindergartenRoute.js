@@ -1,6 +1,8 @@
 const express=require("express")
 const router=express.Router()
 const KindergartenController=require("../controller/KindergartenController")
+const verifyJWT=require("../middleware/verifyJWT")
+router.use(verifyJWT)
 router.get("/",KindergartenController.getAllKindergarten)
 router.get("/:_id",KindergartenController.getKindergartenByID )
 router.put("/:_id",KindergartenController.updateKindergarten)

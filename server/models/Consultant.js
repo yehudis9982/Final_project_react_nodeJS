@@ -11,7 +11,7 @@ lastName:{
 },
 tz:{
     type:String,
-    require:true,
+    required:true,
     maxLength:9,
     immutable:true
 },

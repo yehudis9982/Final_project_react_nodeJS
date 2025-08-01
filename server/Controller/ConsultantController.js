@@ -40,7 +40,7 @@ const updateConsultant=async(req,res)=> {
 //קבלת יועצת בודדת
 const getConsultantByID=async(req,res)=>{
     const{_id}=req.params
-    const consultant=await Consultant.findById(_id)
+    const consultant=await Consultant.findById({_id:req.Consultant._id})
     if(!consultant){ return res.status(400).json({"message":"no consultant found!"})}
     res.json(consultant)
 }
