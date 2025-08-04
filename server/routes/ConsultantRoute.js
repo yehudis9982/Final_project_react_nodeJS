@@ -6,6 +6,7 @@ const verifyJWT=require("../middleware/verifyJWT")
 router.use(verifyJWT)
 
 router.get("/",ConsultantController.getAllConsultant)
+router.get("/:_id/workdays",ConsultantController.getConsultantWorkDays)
 router.get("/:_id",ConsultantController.getConsultantByID)
 router.put("/:_id",ConsultantController.updateConsultant)
 router.delete("/:_id", ConsultantController.deleteConsultant)

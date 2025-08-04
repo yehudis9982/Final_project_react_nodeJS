@@ -27,6 +27,29 @@ email:{
     type:String,
     required:true
 },
+// ימי עבודה עם שעות ספציפיות לכל יום
+workSchedule: [{
+    dayOfWeek: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 6 // 0=ראשון, 6=שבת
+    },
+    startHour: {
+        type: String,
+        required: true,
+        default: "08:00"
+    },
+    endHour: {
+        type: String,
+        required: true,
+        default: "16:00"
+    },
+    isWorkDay: {
+        type: Boolean,
+        default: true
+    }
+}],
 task:[Task.schema],
 kindergartens:[{ type: mongoose.Schema.Types.ObjectId, ref: "Kindergarten" }],
 roles:{
