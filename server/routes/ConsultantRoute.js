@@ -1,14 +1,12 @@
 const express=require("express")
 const router=express.Router()
 const ConsultantController=require("../Controller/ConsultantController")
+const authController = require("../Controller/authController")
 const verifyJWT=require("../middleware/verifyJWT")
-
-router.use(verifyJWT)
-
-router.get("/",ConsultantController.getAllConsultant)
+router.get("/",verifyJWT,ConsultantController.getAllConsultant)
 //router.get("/:_id/workdays",ConsultantController.getConsultantWorkDays)
-router.get("/:_id",ConsultantController.getConsultantByID)
-router.put("/:_id",ConsultantController.updateConsultant)
-router.delete("/:_id", ConsultantController.deleteConsultant)
-router.post("/",ConsultantController.addConsultant)
+router.get("/:_id",verifyJWT,ConsultantController.getConsultantByID)
+router.put("/:_id",verifyJWT,ConsultantController.updateConsultant)
+router.delete("/:_id",verifyJWT, ConsultantController.deleteConsultant)
+router.post("/", authController.register)
 module.exports=router

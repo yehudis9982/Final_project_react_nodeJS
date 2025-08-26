@@ -16,10 +16,11 @@ const AuthForm = ({ onAuth }) => {
     setError('');
     try {
       if (isLogin) {
-        const res = await axios.post('/auth/login', { email, password });
+        const res = await axios.post('/auth/login', { tz, password });
+        localStorage.setItem("token", res.data.accessToken)
         onAuth(res.data);
       } else {
-        const res = await axios.post('/consultant', {
+        const res = await axios.post('/Consultant', {
           firstName,
           lastName,
           email,
@@ -27,6 +28,7 @@ const AuthForm = ({ onAuth }) => {
           phone,
           tz,
         });
+        localStorage.setItem("token", res.data.accessToken)
         onAuth(res.data);
       }
     } catch (err) {

@@ -37,7 +37,17 @@ if(duplicate){
   const hashedPwd=await bcrypt.hash(password,10)
   const consultant=await Consultant.create({firstName,lastName,email,phone,tz,password:hashedPwd})
   if(consultant){
-      return res.status(201).json({message:`new consultant ${consultant.tz} created`})
+
+        const consultantInfo = {
+    _id: consultant._id,
+    name: consultant.firstName,
+    roles: consultant.roles,
+    tz: consultant.tz,
+    email: consultant.email,
+    phone: consultant.phone
+  };
+  const accessToken = jwt.sign(consultantInfo, process.env.ACCESS_TOKEN_SECRET);
+  return res.status(201).json({ accessToken }); // מחזירים token
   }
   else{
       return res.status(400).json({message:"Invalid consultant received"})
