@@ -1,21 +1,23 @@
 
 import React from 'react';
-import Tasks from './pages/Tasks';
-import WeeklyReports from './pages/WeeklyReports';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Kindergartens from './pages/Kindergartens';
 import Consultants from './pages/Consultants';
+import TaskList from './components/TaskList';
+import KindergartenList from './components/KindergartenList';
+import WeeklyReportList from './components/WeeklyReportList';
+import WeeklyReportForm from './components/WeeklyReportForm';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/weekly-reports" element={<WeeklyReports />} />
-        <Route path="/kindergartens" element={<Kindergartens />} />
-         <Route path="/consultants" element={<Consultants />} />
+        <Route path="/tasks" element={<TaskList />} />
+        <Route path="/weekly-reports" element={<WeeklyReportList />} />
+        <Route path="/kindergartens" element={<KindergartenList />} />
+        <Route path="/consultants" element={<Consultants />} />
+        <Route path="/weekly-reports/new" element={<WeeklyReportForm />} />
       </Routes>
     </BrowserRouter>
   );

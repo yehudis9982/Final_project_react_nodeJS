@@ -23,6 +23,9 @@ const ConsultantDashboard = ({ consultant, onLogout }) => {
         <li>
           <a href="/kindergartens">רשימת הגנים שלי</a>
         </li>
+        <li>
+          <a href="/weekly-reports/new">דוח שבועי חדש</a>
+        </li>
       </ul>
       <button onClick={handleLogout}>יציאה</button>
     </div>
