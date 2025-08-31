@@ -4,6 +4,7 @@ import axios from "axios";
 const ConsultantList = ({ token }) => {
   const [consultants, setConsultants] = useState([]);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState(""); // שדה חיפוש
 
   useEffect(() => {
     const fetchConsultants = async () => {
@@ -19,13 +20,25 @@ const ConsultantList = ({ token }) => {
     fetchConsultants();
   }, [token]);
 
+  // סינון היועצות לפי שם פרטי או משפחה
+  const filtered = consultants.filter(c =>
+    (c.firstName + " " + c.lastName).includes(search)
+  );
+
   if (error) return <div>{error}</div>;
 
   return (
     <div>
       <h2>רשימת יועצות</h2>
+      <input
+        type="text"
+        placeholder="חיפוש לפי שם יועצת..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        style={{ marginBottom: "10px", direction: "rtl" }}
+      />
       <ul>
-        {consultants.map((c) => (
+        {filtered.map((c) => (
           <li key={c._id}>
             {c.firstName} {c.lastName} - {c.email}
           </li>

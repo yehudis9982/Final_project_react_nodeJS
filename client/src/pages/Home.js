@@ -28,14 +28,27 @@ const Home = () => {
           <p>התחברת בהצלחה.</p>
           <div>
           {/* אם מפקחת - הצג רשימת יועצות */}
-          {decoded?.roles === "Supervisor" ? (
-            <ConsultantList token={token} />
-          ) : (
-            // אחרת - הצג דשבורד ליועצת
-            <ConsultantDashboard consultant={decoded} />
-          )}
+{decoded?.roles === "Supervisor" ? (
+  <>
+    <ConsultantList token={token} />
+    <button
+      onClick={() => {
+        localStorage.removeItem("token");
+        setUser(null);
+        window.location.href = "/";
+      }}
+      style={{ marginTop: "16px" }}
+    >
+      יציאה
+    </button>
+  </>
+) : (
+  // אחרת - הצג דשבורד ליועצת
+  <ConsultantDashboard consultant={decoded} onLogout={() => setUser(null)} />
+)}
         </div>
         </div>
+        
       )}
     </div>
   );

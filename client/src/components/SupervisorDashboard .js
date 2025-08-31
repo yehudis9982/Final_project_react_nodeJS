@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const ConsultantDashboard = ({ consultant, onLogout }) => {
+const SupervisorDashboard  = ({ consultant, onLogout }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,13 +15,7 @@ const ConsultantDashboard = ({ consultant, onLogout }) => {
       <h2>שלום {consultant.name || consultant.firstName}!</h2>
       <ul>
         <li>
-          <a href="/tasks">המשימות שלי</a>
-        </li>
-        <li>
-          <a href="/weekly-reports">הדוחות השבועיים שלי</a>
-        </li>
-        <li>
-          <a href="/kindergartens">רשימת הגנים שלי</a>
+          <a href="/consultants">רשימת היועצות</a>
         </li>
       </ul>
       <button onClick={handleLogout}>יציאה</button>
@@ -29,4 +23,4 @@ const ConsultantDashboard = ({ consultant, onLogout }) => {
   );
 };
 
-export default ConsultantDashboard;
+export default SupervisorDashboard ;
