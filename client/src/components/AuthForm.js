@@ -56,15 +56,23 @@ const AuthForm = ({ onAuth }) => {
               onChange={e => setLastName(e.target.value)}
               required
             />
-          </>
-        )}
-        <input
+            <input
           type="text"
           placeholder="אימייל"
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
         />
+        <input
+          type="text"
+          placeholder="טלפון"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          required
+        />
+          </>
+        )}
+        
         <input
           type="text"
           placeholder="סיסמה"
@@ -79,13 +87,7 @@ const AuthForm = ({ onAuth }) => {
           onChange={e => setTz(e.target.value)}
           required
         />
-        <input
-          type="text"
-          placeholder="טלפון"
-          value={phone}
-          onChange={e => setPhone(e.target.value)}
-          required
-        />
+        
         <button type="submit">{isLogin ? 'כניסה' : 'הרשמה'}</button>
       </form>
       <button onClick={() => setIsLogin(!isLogin)} style={{ marginTop: 10 }}>

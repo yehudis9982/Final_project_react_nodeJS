@@ -1,18 +1,14 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react"
 
-const ConsultantDashboard = ({ consultant, onLogout }) => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    if (onLogout) onLogout();
-    navigate("/");
-  };
+const ConsultantDashboard = ({ consultant }) => {
+ 
 
   return (
     <div>
       <h2>שלום {consultant.name || consultant.firstName}!</h2>
+     {(!consultant?.workSchedule || consultant.workSchedule.length === 0) && (
+  <h3>שימי לב עדיין לא הגדרת שעות עבודה ,יש לעדכן בהקדם!</h3>
+)}
       <ul>
         <li>
           <a href="/tasks">המשימות שלי</a>
@@ -26,8 +22,10 @@ const ConsultantDashboard = ({ consultant, onLogout }) => {
         <li>
           <a href="/weekly-reports/new">דוח שבועי חדש</a>
         </li>
+        <li>
+          <a href="/UpdateWorkSchdule">עדכון מערכת השעות</a>
+        </li>
       </ul>
-      <button onClick={handleLogout}>יציאה</button>
     </div>
   );
 };

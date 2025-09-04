@@ -39,7 +39,7 @@ const addConsultant = async (req, res) => {
   res.json(consultant);
 };
 
-// קבלת יועצת לפי מזהה
+// קבלת יועצת לפי מזה
 const getConsultantByID = async (req, res) => {
   const { _id } = req.params;
   const consultant = await Consultant.findById(_id, { password: 0 });

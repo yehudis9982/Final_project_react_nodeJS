@@ -7,7 +7,13 @@ const verifyJWT=(req,res,next)=>{
   const token=authHeader.split(' ')[1]
   jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,decoded)=>{
     if(err) return res.status(403).json({message:"Forbidden"})
-      req.consultant=decoded
+      console.log("decoded from token:", decoded);
+        // הוספת שדה id שיהיה נוח להשתמש בו
+    req.consultant = {
+      ...decoded,
+      id: decoded._id || decoded.id,
+    };
+
       next()
   })
 

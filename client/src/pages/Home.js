@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import AuthForm from '../components/AuthForm';
-import ConsultantList from '../components/ConsultantList';
 import {jwtDecode} from 'jwt-decode';
 import ConsultantDashboard from '../components/ConsultantDashboard';
-
+import SupervisorDashboard from '../components/SupervisorDashboard';
 const Home = () => {
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("token")
@@ -29,21 +28,11 @@ const Home = () => {
           <div>
           {/* אם מפקחת - הצג רשימת יועצות */}
 {decoded?.roles === "Supervisor" ? (
-  <>
-    <ConsultantList token={token} />
-    <button
-      onClick={() => {
-        localStorage.removeItem("token");
-        setUser(null);
-        window.location.href = "/";
-      }}
-      style={{ marginTop: "16px" }}
-    >
-      יציאה
-    </button>
-  </>
+  <SupervisorDashboard consultant={decoded} onLogout={() => {
+    setUser(null);
+    localStorage.removeItem("token");
+  }} />
 ) : (
-  // אחרת - הצג דשבורד ליועצת
   <ConsultantDashboard consultant={decoded} onLogout={() => setUser(null)} />
 )}
         </div>

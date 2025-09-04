@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 const ConsultantList = ({ token }) => {
   const [consultants, setConsultants] = useState([]);
   const [error, setError] = useState("");
   const [search, setSearch] = useState(""); // שדה חיפוש
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchConsultants = async () => {
       try {
@@ -30,6 +30,12 @@ const ConsultantList = ({ token }) => {
   return (
     <div>
       <h2>רשימת יועצות</h2>
+      <button
+        style={{ marginBottom: "10px", display: "inline-block" }}
+        onClick={() => navigate("/consultants/new")}
+      >
+        הוספת יועצת חדשה
+      </button>
       <input
         type="text"
         placeholder="חיפוש לפי שם יועצת..."

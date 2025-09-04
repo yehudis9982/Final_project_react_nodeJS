@@ -37,12 +37,12 @@ workSchedule: [{
     },
     startHour: {
         type: String,
-        required: true,
+        required: function() { return this.isWorkDay; },
         default: "08:00"
     },
     endHour: {
         type: String,
-        required: true,
+        required: function() { return this.isWorkDay; },
         default: "16:00"
     },
     isWorkDay: {
