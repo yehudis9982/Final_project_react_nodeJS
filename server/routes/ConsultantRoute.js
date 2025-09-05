@@ -7,6 +7,6 @@ router.get("/",verifyJWT,ConsultantController.getAllConsultant)
 router.get("/:_id",verifyJWT,ConsultantController.getConsultantByID)
 router.post("/", authController.register)
 router.delete("/:_id",verifyJWT, ConsultantController.deleteConsultant)
-//router.put("/work-schedule", verifyJWT,ConsultantController.updateWorkSchedule)
+router.put("/work-schedule", verifyJWT, ConsultantController.updateWorkSchedule);
 router.put("/:_id",verifyJWT,ConsultantController.updateConsultant)
 module.exports=router

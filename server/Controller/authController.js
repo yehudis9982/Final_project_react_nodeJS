@@ -19,7 +19,8 @@ name:foundConsultant.firstName,
 roles:foundConsultant.roles,
 tz:foundConsultant.tz,
 email:foundConsultant.email,
-phone:foundConsultant.phone
+phone:foundConsultant.phone,
+workSchedule:foundConsultant.workSchedule||[]
 }
 const accessToken=jwt.sign(consultantInfo,process.env.ACCESS_TOKEN_SECRET)
 res.json({accessToken})
@@ -44,7 +45,8 @@ if(duplicate){
     roles: consultant.roles,
     tz: consultant.tz,
     email: consultant.email,
-    phone: consultant.phone
+    phone: consultant.phone,
+    workSchedule: consultant.workSchedule || []
   };
   const accessToken = jwt.sign(consultantInfo, process.env.ACCESS_TOKEN_SECRET);
   return res.status(201).json({ accessToken }); // מחזירים token

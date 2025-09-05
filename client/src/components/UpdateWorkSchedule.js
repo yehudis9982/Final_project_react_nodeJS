@@ -3,8 +3,7 @@ import axios from "axios";
 
 const UpdateWorkSchedule = () => {
   const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
- const consultant = JSON.parse(localStorage.getItem("consultant"));
- const token = consultant?.accessToken;
+   const token = localStorage.getItem("token");
   // אתחול מערך עם 7 ימים ריקים
   const [workSchedule, setWorkSchedule] = useState(
     days.map((_, index) => ({
@@ -22,22 +21,80 @@ const UpdateWorkSchedule = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = workSchedule.map(day => ({
-  ...day,
-  startHour: day.isWorkDay ? day.startHour : null,
-  endHour: day.isWorkDay ? day.endHour : null,
-}));
-     await axios.put("http://localhost:2025/api/Consultant/work-schedule", 
-  { workSchedule: payload },
-  { headers: { Authorization: `Bearer ${token}` } }
-);
-    } catch (err) {
-      console.error("שגיאה:", err);
-      alert("אירעה שגיאה בשמירת לוח העבודה");
+  e.preventDefault();
+
+  if (!token) {
+    alert("אין טוקן התחברות – התחבר/י מחדש");
+    return;
+  }
+
+  // ולידציה בסיסית בצד לקוח
+  for (const d of workSchedule) {
+    if (d.isWorkDay) {
+      if (!d.startHour || !d.endHour) {
+        alert("בשעות עבודה חובה למלא התחלה/סיום");
+        return;
+      }
+      if (d.endHour <= d.startHour) {
+        alert("שעת סיום חייבת להיות אחרי שעת התחלה");
+        return;
+      }
     }
-  };
+  }
+
+  try {
+    const payload = workSchedule.map((day) => ({
+      ...day,
+      startHour: day.isWorkDay ? day.startHour : null,
+      endHour: day.isWorkDay ? day.endHour : null,
+      dayOfWeek: Number(day.dayOfWeek),
+    }));
+
+    const res = await axios.put(
+      "http://localhost:2025/api/Consultant/work-schedule",
+      { workSchedule: payload },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    console.log("עודכן:", res.data);
+   const updatedWorkSchedule = res.data?.workSchedule ?? [];
+
+// קריאה בטוחה ל-localStorage עבור consultant
+let currentConsultant = {};
+try {
+  const cStr = localStorage.getItem("consultant");
+  currentConsultant = cStr ? JSON.parse(cStr) : {};
+} catch (e) {
+  currentConsultant = {};
+}
+
+
+localStorage.setItem(
+  "consultant",
+  JSON.stringify({ ...currentConsultant, workSchedule: updatedWorkSchedule })
+);
+
+alert("לוח העבודה נשמר בהצלחה");
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.error("Axios error:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message,
+      });
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        "שגיאה בבקשה";
+      alert(msg);
+    } else {
+      console.error("Unknown error:", err);
+      alert("שגיאה לא צפויה");
+    }
+  }
+};
+
 
   return (
     <form onSubmit={handleSubmit}>

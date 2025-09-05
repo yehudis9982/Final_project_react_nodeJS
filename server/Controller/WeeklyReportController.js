@@ -96,7 +96,6 @@ const deleteWeeklyReport=async (req,res)=>{
 //עדכון לוח שבועי
 const updateWeeklyReport=async(req,res)=> {
 //עדכון לוח שבועי
-const updateWeeklyReport=async(req,res)=> {
     const {consultant, weekStartDate, dailyWork, generalNotes, status}=req.body
     const{_id}=req.params    
     const weeklyReport=await WeeklyReport.findById(_id)
@@ -152,7 +151,7 @@ const updateWeeklyReport=async(req,res)=> {
     
     res.json(populatedReport)
 }
-}
+
 //קבלת לוח שבועי בודד
 const getWeeklyReportByID=async(req,res)=>{
     const{_id}=req.params
