@@ -9,4 +9,7 @@ router.post("/", authController.register)
 router.delete("/:_id",verifyJWT, ConsultantController.deleteConsultant)
 router.put("/work-schedule", verifyJWT, ConsultantController.updateWorkSchedule);
 router.put("/:_id",verifyJWT,ConsultantController.updateConsultant)
+router.put("/my-kindergartens", verifyJWT, ConsultantController.updateConsultantKindergartens);
+router.get("/me", verifyJWT, ConsultantController.getMe);
+
 module.exports=router

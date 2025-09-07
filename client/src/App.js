@@ -33,8 +33,10 @@ function App() {
         <SupervisorDashboard consultant={consultant} onLogout={handleLogout} /> } />
         <Route path="/consultants" element={<ConsultantList token={localStorage.getItem("token")} />} />
         <Route path="/weekly-reports/new" element={<WeeklyReportForm />} />
+        <Route path="/weekly-reports/edit/:reportId" element={<WeeklyReportForm />} />
         <Route path="/consultants/new" element={<ConsultantForm token={localStorage.getItem("token")} />} />
         <Route path="/UpdateWorkSchdule" element={<UpdateWorkSchedule/>  } />
+        
       </Routes>
     </BrowserRouter>
   );

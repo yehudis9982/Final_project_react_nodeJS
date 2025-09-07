@@ -5,7 +5,10 @@ const ConsultantDashboard = ({ consultant }) => {
 
   return (
     <div>
-      <h2>שלום {consultant.name || consultant.firstName}!</h2>
+      {!consultant
+  ? <h2>טוען נתונים...</h2>
+  : <h2>שלום {consultant.name || consultant.firstName}!</h2>
+}
      {(!consultant?.workSchedule || consultant.workSchedule.length === 0) && (
   <h3>שימי לב עדיין לא הגדרת שעות עבודה ,יש לעדכן בהקדם!</h3>
 )}

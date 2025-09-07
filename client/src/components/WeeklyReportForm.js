@@ -1,16 +1,26 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import axios from "axios";
-
+import { useParams } from "react-router-dom";
 const WeeklyReportForm = () => {
+  const { reportId } = useParams(); // קבלת מזהה הדוח מה-URL
   const [weekStartDate, setWeekStartDate] = useState("");
-  const [reportId, setReportId] = useState(null);
   const [dailyWork, setDailyWork] = useState([]);
   const [generalNotes, setGeneralNotes] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("Draft");
   const [saving, setSaving] = useState(false);
   const [creating, setCreating] = useState(false);
-
+const [kindergartensList, setKindergartensList] = useState([]);
+useEffect(() => {
+  const fetchKindergartens = async () => {
+    const token = localStorage.getItem("token");
+    const res = await axios.get("http://localhost:2025/api/Kindergarten", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setKindergartensList(res.data);
+  };
+  fetchKindergartens();
+}, []);
   // JWT כמחרוזת
   const token = useMemo(() => {
     try {
@@ -33,6 +43,7 @@ const WeeklyReportForm = () => {
   const extractErrMsg = (err) =>
     err?.response?.data?.message ||
     err?.response?.data?.error ||
+    (typeof err?.response?.data === "string" ? err.response.data : null) ||
     err?.message ||
     "שגיאה לא צפויה";
 
@@ -46,11 +57,30 @@ const WeeklyReportForm = () => {
   const safeDW = (arr) =>
     (Array.isArray(arr) ? arr : []).map((d) => ({
       date: d?.date || new Date().toISOString(),
+      dayOfWeek: d?.dayOfWeek ?? new Date(d?.date || Date.now()).getDay(),
       totalHours: Number.isFinite(Number(d?.totalHours)) ? Number(d?.totalHours) : 0,
       notes: d?.notes || "",
       kindergartens: Array.isArray(d?.kindergartens) ? d.kindergartens : [],
       tasks: Array.isArray(d?.tasks) ? d.tasks : [],
     }));
+
+  // טעינת דוח לעריכה אם יש reportId
+  useEffect(() => {
+    if (reportId) {
+      const fetchReport = async () => {
+        try {
+          const { data } = await client.get(`/WeeklyReport/${reportId}`);
+          setWeekStartDate(data.weekStartDate || "");
+          setDailyWork(safeDW(data.dailyWork));
+          setGeneralNotes(data.generalNotes || "");
+          setStatus(data.status || "Draft");
+        } catch (err) {
+          setMessage("שגיאה בטעינת דוח לעריכה");
+        }
+      };
+      fetchReport();
+    }
+  }, [reportId, client]);
 
   const createTemplate = async () => {
     if (!token) { setMessage("חסר טוקן. התחברות נדרשת."); return; }
@@ -69,16 +99,20 @@ const WeeklyReportForm = () => {
       const id = pickId(data);
       if (!id) {
         setMessage("נוצרה תבנית ללא מזהה. ודא/י שהשרת מחזיר _id.");
-        setReportId(null);
         return;
       }
-      setReportId(String(id));
+      // עדכון הסטייטים
       setDailyWork(safeDW(data?.dailyWork));
       setGeneralNotes(data?.generalNotes || "");
       setStatus(data?.status || "Draft");
       setMessage("תבנית נוצרה בהצלחה, ניתן לערוך ולשלוח.");
     } catch (err) {
-      setMessage(extractErrMsg(err) || "שגיאה ביצירת תבנית");
+      const msg = extractErrMsg(err);
+      if (msg === "Weekly report for this week already exists!") {
+        setMessage("כבר קיים דוח שבועי לתאריך זה. ניתן לערוך אותו ברשימת הדוחות.");
+      } else {
+        setMessage(msg || "שגיאה ביצירת תבנית");
+      }
     } finally {
       clearTimeout(kill);
       setCreating(false);
@@ -87,7 +121,13 @@ const WeeklyReportForm = () => {
 
   const updateField = (i, field, value) => {
     setDailyWork((prev) =>
-      prev.map((d, idx) => (idx === i ? { ...d, [field]: value } : d))
+      prev.map((d, idx) => {
+        if (idx !== i) return d;
+        if (field === "date") {
+          return { ...d, date: value, dayOfWeek: new Date(value).getDay() };
+        }
+        return { ...d, [field]: value };
+      })
     );
   };
 
@@ -162,7 +202,7 @@ const WeeklyReportForm = () => {
 
   const saveReport = async (finalize = false) => {
     if (!token) { setMessage("חסר טוקן. התחברות נדרשת."); return; }
-    if (!reportId) { setMessage("אין reportId לשמירה – צר/י תבנית קודם"); return; }
+    if (!reportId && !reportId) { setMessage("אין reportId לשמירה – צר/י תבנית קודם"); return; }
 
     setSaving(true);
     const ac = new AbortController();
@@ -202,21 +242,24 @@ const WeeklyReportForm = () => {
     <div className="p-4 max-w-4xl mx-auto border rounded">
       <h2 className="text-xl font-bold mb-4">דוח שבועי - יצירה ועריכה</h2>
 
-      <input
-        type="date"
-        value={weekStartDate}
-        onChange={(e) => setWeekStartDate(e.target.value)}
-        className="border p-2 rounded w-full mb-3"
-      />
-
-      <button
-        onClick={createTemplate}
-        className="bg-blue-600 text-white px-4 py-2 rounded mb-4 disabled:opacity-60"
-        disabled={!token || creating}
-        title={!token ? "חסר טוקן – התחבר/י" : ""}
-      >
-        {creating ? "יוצר..." : "צור תבנית לשבוע"}
-      </button>
+      {!reportId && (
+        <>
+          <input
+            type="date"
+            value={weekStartDate}
+            onChange={(e) => setWeekStartDate(e.target.value)}
+            className="border p-2 rounded w-full mb-3"
+          />
+          <button
+            onClick={createTemplate}
+            className="bg-blue-600 text-white px-4 py-2 rounded mb-4 disabled:opacity-60"
+            disabled={!token || creating}
+            title={!token ? "חסר טוקן – התחבר/י" : ""}
+          >
+            {creating ? "יוצר..." : "צור תבנית לשבוע"}
+          </button>
+        </>
+      )}
 
       {!dailyWork.length && reportId && (
         <p className="text-gray-600">טוען תבנית עריכה...</p>
@@ -269,12 +312,18 @@ const WeeklyReportForm = () => {
           </button>
           {(day.kindergartens || []).map((kg, k) => (
             <div key={k} className="mb-2">
-              <input
-                placeholder="ID גן"
-                value={kg.kindergarten}
-                onChange={(e) => updateKG(i, k, "kindergarten", e.target.value)}
-                className="border p-2 rounded w-full mb-1"
-              />
+              <select
+  value={kg.kindergarten}
+  onChange={(e) => updateKG(i, k, "kindergarten", e.target.value)}
+  className="border p-2 rounded w-full mb-1"
+>
+  <option value="">בחר גן</option>
+  {kindergartensList.map((kgItem) => (
+    <option key={kgItem._id} value={kgItem._id}>
+      {kgItem.name}
+    </option>
+  ))}
+</select>
               <input
                 type="time"
                 value={kg.startTime}
@@ -346,7 +395,7 @@ const WeeklyReportForm = () => {
         </div>
       ))}
 
-      {reportId && (
+      {(reportId || dailyWork.length > 0) && (
         <div className="flex gap-2 mt-4">
           <button
             onClick={() => saveReport(false)}

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
+import { useNavigate } from "react-router-dom"; // הוספה
 
 const WeeklyReportList = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // הוספה
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -31,7 +33,15 @@ const WeeklyReportList = () => {
       <h3>הדוחות השבועיים שלי</h3>
       <ul>
         {reports.map((report) => (
-          <li key={report._id}>שבוע {report.weekNumber} - שעות: {report.totalHours}</li>
+          <li key={report._id}>
+            שבוע {report.weekNumber} - שעות: {report.totalHours}
+            <button
+              style={{ marginRight: "10px" }}
+              onClick={() => navigate(`/weekly-reports/edit/${report._id}`)}
+            >
+              ערוך
+            </button>
+          </li>
         ))}
       </ul>
     </div>

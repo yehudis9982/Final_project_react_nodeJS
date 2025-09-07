@@ -142,11 +142,40 @@ const updateWorkSchedule = async (req, res) => {
     return res.status(400).json({ message: msg });
   }
 };
+// עדכון רשימת הגנים ליועצת
+const updateConsultantKindergartens = async (req, res) => {
+  const consultantId = req.consultant._id;
+  const { kindergartens } = req.body; // מערך של מזהי גנים
+
+  if (!Array.isArray(kindergartens)) {
+    return res.status(400).json({ message: "kindergartens חייב להיות מערך" });
+  }
+
+  const consultant = await Consultant.findById(consultantId);
+  if (!consultant) {
+    return res.status(404).json({ message: "יועצת לא נמצאה" });
+  }
+
+  consultant.kindergartens = kindergartens;
+  await consultant.save();
+  res.json({ kindergartens: consultant.kindergartens });
+};
+// קבלת היועצת הנוכחית לפי הטוקן
+const getMe = async (req, res) => {
+  const consultantId = req.consultant._id;
+  const consultant = await Consultant.findById(consultantId).populate("kindergartens");
+  if (!consultant) {
+    return res.status(404).json({ message: "יועצת לא נמצאה" });
+  }
+  res.json(consultant);
+};
 module.exports = {
   getAllConsultant,
   addConsultant,
   getConsultantByID,
   updateConsultant,
   deleteConsultant,
-  updateWorkSchedule 
+  updateWorkSchedule ,
+  updateConsultantKindergartens,
+  getMe
 };
