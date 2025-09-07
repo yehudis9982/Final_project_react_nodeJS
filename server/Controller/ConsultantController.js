@@ -195,6 +195,132 @@ const getMe = async (req, res) => {
     res.status(500).json({ message: "שגיאת שרת" });
   }
 };
+// יצירת הערה ליועצת (מפקחת בלבד)
+const addSupervisorNote = async (req, res) => {
+  try {
+    if (req.consultant?.roles !== "Supervisor") {
+      return res.status(403).json({ message: "Only Supervisor can add notes" });
+    }
+
+    const { _id } = req.params; // consultant id
+    const { text, pinned } = req.body || {};
+
+    if (!mongoose.isValidObjectId(_id)) {
+      return res.status(400).json({ message: "invalid consultant id" });
+    }
+    if (!text || !text.trim()) {
+      return res.status(400).json({ message: "text is required" });
+    }
+
+    const consultant = await Consultant.findById(_id).select("_id supervisorNotes");
+    if (!consultant) return res.status(404).json({ message: "יועצת לא נמצאה" });
+
+    consultant.supervisorNotes.push({
+      author: req.consultant._id,
+      text: text.trim(),
+      pinned: Boolean(pinned),
+    });
+
+    await consultant.save();
+
+    // הערה אחרונה שהתווספה
+    const note = consultant.supervisorNotes[consultant.supervisorNotes.length - 1];
+    return res.status(201).json({ note });
+  } catch (err) {
+    console.error("addSupervisorNote error:", err);
+    return res.status(500).json({ message: "server error" });
+  }
+};
+
+// קריאת כל ההערות – מפקחת או היועצת עצמה
+const getSupervisorNotes = async (req, res) => {
+  try {
+    const { _id } = req.params; // consultant id
+    if (!mongoose.isValidObjectId(_id)) {
+      return res.status(400).json({ message: "invalid consultant id" });
+    }
+
+    const isSupervisor = req.consultant?.roles === "Supervisor";
+    const isSelf = String(req.consultant?._id) === String(_id);
+    if (!isSupervisor && !isSelf) {
+      return res.status(403).json({ message: "forbidden" });
+    }
+
+    const consultant = await Consultant.findById(_id)
+      .select("_id supervisorNotes")
+      .populate({ path: "supervisorNotes.author", select: "firstName lastName email roles" });
+
+    if (!consultant) return res.status(404).json({ message: "יועצת לא נמצאה" });
+
+    const notes = (consultant.supervisorNotes || [])
+      .slice()
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    return res.json({ notes });
+  } catch (err) {
+    console.error("getSupervisorNotes error:", err);
+    return res.status(500).json({ message: "server error" });
+  }
+};
+
+// עדכון הערה – מפקחת בלבד
+const updateSupervisorNote = async (req, res) => {
+  try {
+    if (req.consultant?.roles !== "Supervisor") {
+      return res.status(403).json({ message: "Only Supervisor can update notes" });
+    }
+
+    const { _id, noteId } = req.params; // consultant id + note id
+    const { text, pinned } = req.body || {};
+
+    if (!mongoose.isValidObjectId(_id) || !mongoose.isValidObjectId(noteId)) {
+      return res.status(400).json({ message: "invalid id" });
+    }
+
+    const consultant = await Consultant.findById(_id).select("_id supervisorNotes");
+    if (!consultant) return res.status(404).json({ message: "יועצת לא נמצאה" });
+
+    const note = consultant.supervisorNotes.id(noteId);
+    if (!note) return res.status(404).json({ message: "note not found" });
+
+    if (typeof text === "string") note.text = text.trim();
+    if (typeof pinned === "boolean") note.pinned = pinned;
+    note.updatedAt = new Date();
+
+    await consultant.save();
+    return res.json({ note });
+  } catch (err) {
+    console.error("updateSupervisorNote error:", err);
+    return res.status(500).json({ message: "server error" });
+  }
+};
+
+// מחיקת הערה – מפקחת בלבד
+const deleteSupervisorNote = async (req, res) => {
+  try {
+    if (req.consultant?.roles !== "Supervisor") {
+      return res.status(403).json({ message: "Only Supervisor can delete notes" });
+    }
+
+    const { _id, noteId } = req.params;
+    if (!mongoose.isValidObjectId(_id) || !mongoose.isValidObjectId(noteId)) {
+      return res.status(400).json({ message: "invalid id" });
+    }
+
+    const consultant = await Consultant.findById(_id).select("_id supervisorNotes");
+    if (!consultant) return res.status(404).json({ message: "יועצת לא נמצאה" });
+
+    const note = consultant.supervisorNotes.id(noteId);
+    if (!note) return res.status(404).json({ message: "note not found" });
+
+    note.deleteOne();
+    await consultant.save();
+    return res.json({ message: "deleted" });
+  } catch (err) {
+    console.error("deleteSupervisorNote error:", err);
+    return res.status(500).json({ message: "server error" });
+  }
+};
 
 module.exports = {
   getAllConsultant,
@@ -204,5 +330,9 @@ module.exports = {
   deleteConsultant,
   updateWorkSchedule ,
   updateConsultantKindergartens,
-  getMe
+  getMe,
+  addSupervisorNote,
+  getSupervisorNotes,
+  updateSupervisorNote,
+  deleteSupervisorNote,
 };

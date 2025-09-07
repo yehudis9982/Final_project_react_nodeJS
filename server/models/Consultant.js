@@ -1,5 +1,17 @@
 const mongoose=require("mongoose")
 const Task = require('./Task');
+const SupervisorNoteSchema = new mongoose.Schema({
+  author: { type: mongoose.Schema.Types.ObjectId, ref: "Consultant", required: true }, // המפקחת
+  text: { type: String, required: true, trim: true, maxlength: 2000 },
+  pinned: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+SupervisorNoteSchema.pre("save", function(next){
+  this.updatedAt = new Date();
+  next();
+});
 const ConsultantSchema=new mongoose.Schema({
 firstName:{
     type:String,
@@ -57,5 +69,6 @@ roles:{
     enum:["Supervisor","Consultant"],
     default:"Consultant"
 },
+supervisorNotes: [SupervisorNoteSchema],
 },{ timestamps:true})
 module.exports=mongoose.model("Consultant",ConsultantSchema)
