@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+const REPORTS_PATH = "/reports"; // ← עדכן לפי הראוט בפועל
+
 const ConsultantList = ({ token }) => {
   const [consultants, setConsultants] = useState([]);
   const [error, setError] = useState("");
-  const [search, setSearch] = useState(""); // שדה חיפוש
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchConsultants = async () => {
       try {
@@ -13,22 +17,21 @@ const ConsultantList = ({ token }) => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setConsultants(res.data);
-      } catch (err) {
+      } catch {
         setError("שגיאה בטעינת היועצות");
       }
     };
     fetchConsultants();
   }, [token]);
 
-  // סינון היועצות לפי שם פרטי או משפחה
-  const filtered = consultants.filter(c =>
-    (c.firstName + " " + c.lastName).includes(search)
+  const filtered = consultants.filter((c) =>
+    (`${c.firstName ?? ""} ${c.lastName ?? ""}`).includes(search)
   );
 
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
+    <div dir="rtl">
       <h2>רשימת יועצות</h2>
       <button
         style={{ marginBottom: "10px", display: "inline-block" }}
@@ -36,17 +39,37 @@ const ConsultantList = ({ token }) => {
       >
         הוספת יועצת חדשה
       </button>
+
       <input
         type="text"
         placeholder="חיפוש לפי שם יועצת..."
         value={search}
-        onChange={e => setSearch(e.target.value)}
+        onChange={(e) => setSearch(e.target.value)}
         style={{ marginBottom: "10px", direction: "rtl" }}
       />
-      <ul>
+
+      <ul style={{ listStyle: "none", padding: 0 }}>
         {filtered.map((c) => (
-          <li key={c._id}>
-            {c.firstName} {c.lastName} - {c.email}
+          <li
+            key={c._id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "6px 0",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            <span style={{ flex: 1 }}>
+              {c.firstName} {c.lastName} - {c.email}
+            </span>
+            <button
+              onClick={() =>
+                navigate(`${REPORTS_PATH}?consultantId=${c._id}`)
+              }
+            >
+              צפייה בדוחות שלה
+            </button>
           </li>
         ))}
       </ul>

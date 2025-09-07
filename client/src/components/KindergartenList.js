@@ -11,22 +11,27 @@ const KindergartenList = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    // משוך את כל הגנים
-    axios.get("http://localhost:2025/api/Kindergarten", {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then(res => setAllKindergartens(res.data));
+    const headers = { Authorization: `Bearer ${token}` };
 
-    // משוך את הגנים של היועצת
-    axios.get("http://localhost:2025/api/Consultant/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then(res => {
-      setKindergartens(res.data.kindergartens || []);
-      setSelected(res.data.kindergartens?.map(k => k._id) || []);
-      setLoading(false);
-    }).catch(() => {
-      setError("שגיאה בטעינת הגנים");
-      setLoading(false);
-    });
+    (async () => {
+      try {
+        const [allRes, meRes] = await Promise.all([
+          axios.get("http://localhost:2025/api/Kindergarten", { headers }),
+          axios.get("http://localhost:2025/api/consultant/me", { headers }), // ← ודא התאמה לראוטר
+        ]);
+
+        setAllKindergartens(allRes.data || []);
+
+        const myKindergartens = meRes.data?.kindergartens || [];
+        setKindergartens(myKindergartens);
+        setSelected(myKindergartens.map(k => k._id));
+      } catch (err) {
+        const serverMsg = err?.response?.data?.message;
+        setError(serverMsg || "שגיאה בטעינת הגנים");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   const handleChange = (e) => {
@@ -37,13 +42,15 @@ const KindergartenList = () => {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.put("http://localhost:2025/api/Consultant/my-kindergartens", 
+      await axios.put(
+        "http://localhost:2025/api/consultant/my-kindergartens", // ← ודא התאמה לראוטר
         { kindergartens: selected },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMessage("הרשימה עודכנה בהצלחה!");
     } catch (err) {
-      setMessage("שגיאה בעדכון הרשימה");
+      const serverMsg = err?.response?.data?.message;
+      setMessage(serverMsg || "שגיאה בעדכון הרשימה");
     }
   };
 
@@ -53,17 +60,25 @@ const KindergartenList = () => {
   return (
     <div>
       <h3>עדכון רשימת הגנים שלי</h3>
+
       <select multiple value={selected} onChange={handleChange} style={{ width: "100%", height: "200px" }}>
         {allKindergartens.map((k) => (
-          <option key={k._id} value={k._id}>{k.name}</option>
+          <option key={k._id} value={k._id}>
+            {/* אין שדה name במודל; נשתמש בשדות קיימים לתצוגה */}
+            {k.institutionSymbol} — {k.kindergartenTeacherName}
+          </option>
         ))}
       </select>
+
       <button onClick={handleSave}>שמור רשימה</button>
       {message && <p>{message}</p>}
+
       <h4>הגנים הנוכחיים שלך:</h4>
       <ul>
         {kindergartens.map((k) => (
-          <li key={k._id}>{k.name}</li>
+          <li key={k._id}>
+            {k.institutionSymbol} — {k.kindergartenTeacherName}
+          </li>
         ))}
       </ul>
     </div>

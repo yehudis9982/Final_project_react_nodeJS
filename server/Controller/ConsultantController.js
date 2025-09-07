@@ -144,31 +144,58 @@ const updateWorkSchedule = async (req, res) => {
 };
 // עדכון רשימת הגנים ליועצת
 const updateConsultantKindergartens = async (req, res) => {
-  const consultantId = req.consultant._id;
-  const { kindergartens } = req.body; // מערך של מזהי גנים
+  try {
+    const consultantId = req.consultant?._id;
+    if (!consultantId) return res.status(401).json({ message: "לא מזוהה" });
 
-  if (!Array.isArray(kindergartens)) {
-    return res.status(400).json({ message: "kindergartens חייב להיות מערך" });
+    const { kindergartens } = req.body;
+    if (!Array.isArray(kindergartens)) {
+      return res.status(400).json({ message: "kindergartens חייב להיות מערך" });
+    }
+
+    // ולידציית ObjectId
+    for (const id of kindergartens) {
+      if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ message: `מזהה גן לא תקין: ${id}` });
+      }
+    }
+
+    const consultant = await Consultant.findById(consultantId).select("_id kindergartens");
+    if (!consultant) return res.status(404).json({ message: "יועצת לא נמצאה" });
+
+    consultant.kindergartens = kindergartens;
+    await consultant.save();
+
+    const populated = await Consultant.findById(consultantId)
+      .select("kindergartens")
+      .populate({ path: "kindergartens", select: "_id institutionSymbol kindergartenTeacherName" });
+
+    res.json({ kindergartens: populated.kindergartens });
+  } catch (err) {
+    res.status(500).json({ message: "שגיאה בעדכון הגנים" });
   }
-
-  const consultant = await Consultant.findById(consultantId);
-  if (!consultant) {
-    return res.status(404).json({ message: "יועצת לא נמצאה" });
-  }
-
-  consultant.kindergartens = kindergartens;
-  await consultant.save();
-  res.json({ kindergartens: consultant.kindergartens });
 };
 // קבלת היועצת הנוכחית לפי הטוקן
 const getMe = async (req, res) => {
-  const consultantId = req.consultant._id;
-  const consultant = await Consultant.findById(consultantId).populate("kindergartens");
-  if (!consultant) {
-    return res.status(404).json({ message: "יועצת לא נמצאה" });
+  try {
+    const consultantId = req.consultant?._id;
+    if (!consultantId) return res.status(401).json({ message: "לא מזוהה" });
+
+    const consultant = await Consultant.findById(consultantId)
+      .select("-password")
+      .populate({
+        path: "kindergartens",
+        select: "_id institutionSymbol kindergartenTeacherName address phone age consultant"
+      })
+      .exec();
+
+    if (!consultant) return res.status(404).json({ message: "יועצת לא נמצאה" });
+    res.json(consultant);
+  } catch (err) {
+    res.status(500).json({ message: "שגיאת שרת" });
   }
-  res.json(consultant);
 };
+
 module.exports = {
   getAllConsultant,
   addConsultant,

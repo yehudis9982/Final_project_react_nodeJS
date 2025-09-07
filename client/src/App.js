@@ -12,6 +12,7 @@ import ConsultantForm from './components/ConsultantForm';
 import { useState } from 'react';
 import Header from './components/Header'
 import UpdateWorkSchedule from './components/UpdateWorkSchedule';
+import SupervisorWeeklyReports from './components/SuperviserReport';
 function App() {
   // דוגמה לסטייט של consultant
   const [consultant, setConsultant] = useState({ name: "מפקחת" });
@@ -36,6 +37,8 @@ function App() {
         <Route path="/weekly-reports/edit/:reportId" element={<WeeklyReportForm />} />
         <Route path="/consultants/new" element={<ConsultantForm token={localStorage.getItem("token")} />} />
         <Route path="/UpdateWorkSchdule" element={<UpdateWorkSchedule/>  } />
+         <Route path="/reports" element={<SupervisorWeeklyReports/>  } />
+
         
       </Routes>
     </BrowserRouter>

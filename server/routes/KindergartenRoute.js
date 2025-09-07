@@ -1,6 +1,6 @@
 const express=require("express")
 const router=express.Router()
-const KindergartenController=require("../controller/KindergartenController")
+const KindergartenController=require("../Controller/KindergartenController")
 const verifyJWT=require("../middleware/verifyJWT")
 router.use(verifyJWT)
 router.get("/",KindergartenController.getAllKindergarten)
