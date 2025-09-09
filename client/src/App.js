@@ -33,7 +33,7 @@ function App() {
         <Route path="/kindergartens" element={<KindergartenList />} />
         <Route path="/supervisor-dashboard" element={
         <SupervisorDashboard consultant={consultant} onLogout={handleLogout} /> } />
-        <Route path="/consultants" element={<ConsultantList token={localStorage.getItem("token")} />} />
+        <Route path="/consultants" element={<ConsultantList  />} />
         <Route path="/weekly-reports/new" element={<WeeklyReportForm />} />
         <Route path="/weekly-reports/edit/:reportId" element={<WeeklyReportForm />} />
         <Route path="/consultants/new" element={<ConsultantForm token={localStorage.getItem("token")} />} />

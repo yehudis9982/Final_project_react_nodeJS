@@ -1,8 +1,12 @@
 import React, { useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+
 const WeeklyReportForm = () => {
-  const { reportId } = useParams(); // קבלת מזהה הדוח מה-URL
+  const { reportId: reportIdFromUrl } = useParams();
+
+  const [currentId, setCurrentId] = useState(reportIdFromUrl || null);
+
   const [weekStartDate, setWeekStartDate] = useState("");
   const [dailyWork, setDailyWork] = useState([]);
   const [generalNotes, setGeneralNotes] = useState("");
@@ -10,18 +14,22 @@ const WeeklyReportForm = () => {
   const [status, setStatus] = useState("Draft");
   const [saving, setSaving] = useState(false);
   const [creating, setCreating] = useState(false);
-const [kindergartensList, setKindergartensList] = useState([]);
-useEffect(() => {
-  const fetchKindergartens = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:2025/api/Kindergarten", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setKindergartensList(res.data);
-  };
-  fetchKindergartens();
-}, []);
-  // JWT כמחרוזת
+  const [kindergartensList, setKindergartensList] = useState([]);
+
+  useEffect(() => {
+    const fetchKindergartens = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await axios.get("http://localhost:2025/api/Kindergarten", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setKindergartensList(Array.isArray(res.data) ? res.data : []);
+      } catch {}
+    };
+    fetchKindergartens();
+  }, []);
+
   const token = useMemo(() => {
     try {
       const c = localStorage.getItem("consultant");
@@ -48,11 +56,7 @@ useEffect(() => {
     "שגיאה לא צפויה";
 
   const pickId = (data) =>
-    data?._id ||
-    data?.id ||
-    data?.reportId ||
-    data?.report?._id ||
-    null;
+    data?._id || data?.id || data?.reportId || data?.report?._id || null;
 
   const safeDW = (arr) =>
     (Array.isArray(arr) ? arr : []).map((d) => ({
@@ -64,27 +68,43 @@ useEffect(() => {
       tasks: Array.isArray(d?.tasks) ? d.tasks : [],
     }));
 
-  // טעינת דוח לעריכה אם יש reportId
+  const makeEmptyDay = () => ({
+    date: new Date().toISOString(),
+    dayOfWeek: new Date().getDay(),
+    totalHours: 0,
+    notes: "",
+    kindergartens: [],
+    tasks: [],
+  });
+
+  // טעינת דוח לעריכה אם יש מזהה
   useEffect(() => {
-    if (reportId) {
-      const fetchReport = async () => {
-        try {
-          const { data } = await client.get(`/WeeklyReport/${reportId}`);
-          setWeekStartDate(data.weekStartDate || "");
-          setDailyWork(safeDW(data.dailyWork));
-          setGeneralNotes(data.generalNotes || "");
-          setStatus(data.status || "Draft");
-        } catch (err) {
-          setMessage("שגיאה בטעינת דוח לעריכה");
-        }
-      };
-      fetchReport();
-    }
-  }, [reportId, client]);
+    if (!currentId) return;
+    const fetchReport = async () => {
+      try {
+        const { data } = await client.get(`/WeeklyReport/${currentId}`);
+        setWeekStartDate(data.weekStartDate || "");
+        const days = safeDW(data.dailyWork);
+        setDailyWork(days);
+        setGeneralNotes(data.generalNotes || "");
+        setStatus(data.status || "Draft");
+        setMessage("");
+      } catch {
+        setMessage("שגיאה בטעינת דוח לעריכה");
+      }
+    };
+    fetchReport();
+  }, [currentId, client]);
 
   const createTemplate = async () => {
-    if (!token) { setMessage("חסר טוקן. התחברות נדרשת."); return; }
-    if (!weekStartDate) { setMessage("יש לבחור תאריך תחילת שבוע"); return; }
+    if (!token) {
+      setMessage("חסר טוקן. התחברות נדרשת.");
+      return;
+    }
+    if (!weekStartDate) {
+      setMessage("יש לבחור תאריך תחילת שבוע");
+      return;
+    }
 
     setCreating(true);
     const ac = new AbortController();
@@ -101,10 +121,23 @@ useEffect(() => {
         setMessage("נוצרה תבנית ללא מזהה. ודא/י שהשרת מחזיר _id.");
         return;
       }
-      // עדכון הסטייטים
-      setDailyWork(safeDW(data?.dailyWork));
-      setGeneralNotes(data?.generalNotes || "");
-      setStatus(data?.status || "Draft");
+
+      setCurrentId(id);
+
+      // משוך מיד את הדוח המלא כדי למלא dailyWork להצגה
+      try {
+        const { data: full } = await client.get(`/WeeklyReport/${id}`);
+        const days = safeDW(full.dailyWork);
+        setDailyWork(days.length ? days : [makeEmptyDay()]);
+        setGeneralNotes(full.generalNotes || "");
+        setStatus(full.status || "Draft");
+      } catch {
+        const days = safeDW(data?.dailyWork);
+        setDailyWork(days.length ? days : [makeEmptyDay()]);
+        setGeneralNotes(data?.generalNotes || "");
+        setStatus(data?.status || "Draft");
+      }
+
       setMessage("תבנית נוצרה בהצלחה, ניתן לערוך ולשלוח.");
     } catch (err) {
       const msg = extractErrMsg(err);
@@ -201,8 +234,14 @@ useEffect(() => {
   };
 
   const saveReport = async (finalize = false) => {
-    if (!token) { setMessage("חסר טוקן. התחברות נדרשת."); return; }
-    if (!reportId && !reportId) { setMessage("אין reportId לשמירה – צר/י תבנית קודם"); return; }
+    if (!token) {
+      setMessage("חסר טוקן. התחברות נדרשת.");
+      return;
+    }
+    if (!currentId) {
+      setMessage("אין reportId לשמירה – צר/י תבנית קודם");
+      return;
+    }
 
     setSaving(true);
     const ac = new AbortController();
@@ -215,7 +254,7 @@ useEffect(() => {
       };
 
       const res = await client.put(
-        `/WeeklyReport/${encodeURIComponent(reportId)}`,
+        `/WeeklyReport/${encodeURIComponent(currentId)}`,
         payload,
         { signal: ac.signal }
       );
@@ -242,7 +281,7 @@ useEffect(() => {
     <div className="p-4 max-w-4xl mx-auto border rounded">
       <h2 className="text-xl font-bold mb-4">דוח שבועי - יצירה ועריכה</h2>
 
-      {!reportId && (
+      {!currentId && (
         <>
           <input
             type="date"
@@ -261,8 +300,16 @@ useEffect(() => {
         </>
       )}
 
-      {!dailyWork.length && reportId && (
-        <p className="text-gray-600">טוען תבנית עריכה...</p>
+      {currentId && dailyWork.length === 0 && (
+        <div className="mb-4">
+          <p className="text-gray-600 mb-2">לא קיימים ימים בתבנית.</p>
+          <button
+            onClick={() => setDailyWork([makeEmptyDay()])}
+            className="bg-gray-700 text-white px-3 py-2 rounded"
+          >
+            הוסף יום
+          </button>
+        </div>
       )}
 
       {dailyWork.length > 0 && (
@@ -313,31 +360,31 @@ useEffect(() => {
           {(day.kindergartens || []).map((kg, k) => (
             <div key={k} className="mb-2">
               <select
-  value={kg.kindergarten}
-  onChange={(e) => updateKG(i, k, "kindergarten", e.target.value)}
-  className="border p-2 rounded w-full mb-1"
->
-  <option value="">בחר גן</option>
-  {kindergartensList.map((kgItem) => (
-    <option key={kgItem._id} value={kgItem._id}>
-      {kgItem.name}
-    </option>
-  ))}
-</select>
+                value={kg.kindergarten}
+                onChange={(e) => updateKG(i, k, "kindergarten", e.target.value)}
+                className="border p-2 rounded w-full mb-1"
+              >
+                <option value="">בחר גן</option>
+                {kindergartensList.map((kgItem) => (
+                  <option key={kgItem._id} value={kgItem._id}>
+                    {kgItem.name}
+                  </option>
+                ))}
+              </select>
               <input
                 type="time"
-                value={kg.startTime}
+                value={kg.startTime || ""}
                 onChange={(e) => updateKG(i, k, "startTime", e.target.value)}
                 className="border p-2 rounded w-full mb-1"
               />
               <input
                 type="time"
-                value={kg.endTime}
+                value={kg.endTime || ""}
                 onChange={(e) => updateKG(i, k, "endTime", e.target.value)}
                 className="border p-2 rounded w-full mb-1"
               />
               <textarea
-                value={kg.notes}
+                value={kg.notes || ""}
                 onChange={(e) => updateKG(i, k, "notes", e.target.value)}
                 className="border p-2 rounded w-full mb-2"
               />
@@ -395,7 +442,7 @@ useEffect(() => {
         </div>
       ))}
 
-      {(reportId || dailyWork.length > 0) && (
+      {(currentId || dailyWork.length > 0) && (
         <div className="flex gap-2 mt-4">
           <button
             onClick={() => saveReport(false)}

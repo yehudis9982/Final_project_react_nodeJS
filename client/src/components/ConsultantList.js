@@ -5,13 +5,13 @@ import ConsultantNotesModal from "./ConsultantNotesModal";
 
 const REPORTS_PATH = "/reports"; // עדכן לפי הראוט בפועל
 
-const ConsultantList = ({ token }) => {
+const ConsultantList = () => {
   const [consultants, setConsultants] = useState([]);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [openForId, setOpenForId] = useState(null);
   const navigate = useNavigate();
-
+ const token = localStorage.getItem("token");
   useEffect(() => {
     (async () => {
       try {
