@@ -28,6 +28,9 @@ const ConsultantDashboard = ({ consultant }) => {
         <li>
           <a href="/UpdateWorkSchdule">עדכון מערכת השעות</a>
         </li>
+        <li>
+          <a href="/supervisor-notes">הערות מפקחת</a>
+        </li>
       </ul>
     </div>
   );

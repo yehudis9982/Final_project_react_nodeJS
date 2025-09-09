@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Consultant = require('../models/Consultant');
 
 // קבלת כל היועצות
@@ -235,18 +236,16 @@ const addSupervisorNote = async (req, res) => {
 // קריאת כל ההערות – מפקחת או היועצת עצמה
 const getSupervisorNotes = async (req, res) => {
   try {
-    const { _id } = req.params; // consultant id
-    if (!mongoose.isValidObjectId(_id)) {
-      return res.status(400).json({ message: "invalid consultant id" });
+    // קח את ה-id מהפרמטרים אם קיים, אחרת מהטוקן
+    const consultantId = req.params._id || req.consultant?._id;
+    if (!consultantId) return res.status(401).json({ message: "לא מזוהה" });
+
+    // בדוק תקינות מזהה רק אם הגיע מהפרמטרים
+    if (req.params._id && !mongoose.isValidObjectId(req.params._id)) {
+      return res.status(400).json({ message: "invalid id" });
     }
 
-    const isSupervisor = req.consultant?.roles === "Supervisor";
-    const isSelf = String(req.consultant?._id) === String(_id);
-    if (!isSupervisor && !isSelf) {
-      return res.status(403).json({ message: "forbidden" });
-    }
-
-    const consultant = await Consultant.findById(_id)
+    const consultant = await Consultant.findById(consultantId)
       .select("_id supervisorNotes")
       .populate({ path: "supervisorNotes.author", select: "firstName lastName email roles" });
 
@@ -262,7 +261,6 @@ const getSupervisorNotes = async (req, res) => {
     return res.status(500).json({ message: "server error" });
   }
 };
-
 // עדכון הערה – מפקחת בלבד
 const updateSupervisorNote = async (req, res) => {
   try {

@@ -8,6 +8,7 @@ const verifyJWT = require("../middleware/verifyJWT");
 // מידלוור ולידציה לפרמטרי ObjectId
 const validateObjectIdParam = (param) => (req, res, next) => {
   const v = req.params[param];
+  if (v === undefined) return next(); // אם אין פרמטר, המשך
   if (!mongoose.isValidObjectId(v)) {
     return res.status(400).json({ message: "invalid id" });
   }
@@ -22,7 +23,7 @@ router.use(verifyJWT);
 
 // חשוב: /me לפני /:_id
 router.get("/me", ConsultantController.getMe);
-
+router.get('/me/notes', ConsultantController.getSupervisorNotes);
 // הערות מפקחת ליועצת
 router.get("/:_id/notes", validateObjectIdParam("_id"), ConsultantController.getSupervisorNotes);
 router.post("/:_id/notes", validateObjectIdParam("_id"), ConsultantController.addSupervisorNote);
