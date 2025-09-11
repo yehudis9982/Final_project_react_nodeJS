@@ -7,6 +7,9 @@ title:{
 body:{
     type:String
 },
+completed: { 
+    type: Boolean, 
+    default: false } ,
 consultant:{
     type:mongoose.Schema.Types.ObjectId,
     ref:"Consultant"

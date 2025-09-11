@@ -8,4 +8,5 @@ router.get("/:_id",TaskController.getTaskByID)
 router.put("/:_id",TaskController.updateTask)
 router.delete("/:_id", TaskController.deleteTask)
 router.post("/",TaskController.addTask)
+router.patch("/complete/:_id", TaskController.markTaskCompleted);
 module.exports=router

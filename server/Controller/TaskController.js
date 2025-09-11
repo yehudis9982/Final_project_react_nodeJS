@@ -1,30 +1,38 @@
 const Task=require("../models/Task")
 //כל משימות
-const getAllTask=async(req,res)=>{
-    let task
-    if(req.consultant.roles==="Supervisor")
-         task=await Task.find({},{password:0}).sort({_id:1})
-    else
-        task=await Task.find({consultant:req.consultant._id},{password:0}).sort({_id:1})
-
-    res.json(task)
-}
+const getAllTask = async (req, res) => {
+    let task;
+    // אם יש פרמטר consultant ב-query, חפש משימות של היועצת הזו
+    if (req.consultant.roles === "Supervisor") {
+        const consultantId = req.query.consultant;
+        if (consultantId) {
+            task = await Task.find({ consultant: consultantId }).sort({ _id: 1 });
+        } else {
+            task = await Task.find({}).sort({ _id: 1 });
+        }
+    } else {
+        task = await Task.find({ consultant: req.consultant._id }).sort({ _id: 1 });
+    }
+    res.json(task);
+};
 //הוספת משימה
-const addTask=async (req,res)=>{
-    const{title,body}=req.body
-    if(!title){return res.status(400).json({"message":"you didnt sent everything that is required!"})}
-    if(await Task.findOne({title:title}).exec())
-        return res.status(400).send("title needs to be uniqe!")
-    if(req.consultant.roles==="Supervisor"){
-        const task=await Task.create({title,body})
-        res.json(task)
+const addTask = async (req, res) => {
+    const { title, body, consultant } = req.body;
+    if (!title) {
+        return res.status(400).json({ "message": "you didnt sent everything that is required!" });
     }
-    else{
-        const task=await Task.create({title,consultant:req.consultant._id,body})
-        res.json(task) 
+    if (req.consultant.roles === "Supervisor") {
+        // חובה לשלוח מזהה יועצת
+        if (!consultant) {
+            return res.status(400).json({ "message": "חובה לבחור יועצת למשימה!" });
+        }
+        const task = await Task.create({ title, body, consultant });
+        res.json(task);
+    } else {
+        const task = await Task.create({ title, consultant: req.consultant._id, body });
+        res.json(task);
     }
-   
- }
+}
 //מחיקת משימה
 const deleteTask=async (req,res)=>{
     let task
@@ -64,4 +72,21 @@ const getTaskByID=async(req,res)=>{
     if(!task){ return res.status(400).json({"message":"no task found!"})}
     res.json(task)
 }
-module.exports={addTask,updateTask,getAllTask,getTaskByID,deleteTask}
+
+const markTaskCompleted = async (req, res) => {
+    const { _id } = req.params;
+    let task;
+    if (req.consultant.roles === "Supervisor") {
+        task = await Task.findById(_id);
+    } else {
+        task = await Task.findOne({ _id, consultant: req.consultant._id });
+    }
+    if (!task) {
+        return res.status(400).json({ message: "no task found!" });
+    }
+    task.completed = true;
+    await task.save();
+    res.json(task);
+};
+
+module.exports = { addTask, updateTask, getAllTask, getTaskByID, deleteTask, markTaskCompleted };

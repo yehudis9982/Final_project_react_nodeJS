@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const UpdateWorkSchedule = () => {
-  const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+  const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
    const token = localStorage.getItem("token");
-  // אתחול מערך עם 7 ימים ריקים
+  // אתחול מערך עם 6 ימים ריקים
   const [workSchedule, setWorkSchedule] = useState(
     days.map((_, index) => ({
       dayOfWeek: index,

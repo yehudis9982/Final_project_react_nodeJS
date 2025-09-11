@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import ConsultantList from './components/ConsultantList'
 import TaskList from './components/TaskList';
+import TaskForm from './components/TaskForm';
+import TaskDetails from './components/TaskDetails';
 import KindergartenList from './components/KindergartenList';
 import WeeklyReportList from './components/WeeklyReportList';
 import WeeklyReportForm from './components/WeeklyReportForm';
@@ -29,6 +31,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/tasks" element={<TaskList />} />
+        <Route path="/add-task" element={<TaskForm />} />
+        <Route path="/tasks/:_id" element={<TaskDetails />} />
         <Route path="/weekly-reports" element={<WeeklyReportList />} />
         <Route path="/kindergartens" element={<KindergartenList />} />
         <Route path="/supervisor-dashboard" element={

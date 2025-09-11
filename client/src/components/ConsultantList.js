@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // אם יש אינסטנס ייעודי – החלף ל ../api/axios
+import axios from "../api/axios"; // השתמש באינסטנס שלך
 import { useNavigate } from "react-router-dom";
 import ConsultantNotesModal from "./ConsultantNotesModal";
 
-const REPORTS_PATH = "/reports"; // עדכן לפי הראוט בפועל
+const REPORTS_PATH = "/reports";
 
 const ConsultantList = () => {
   const [consultants, setConsultants] = useState([]);
@@ -11,7 +11,8 @@ const ConsultantList = () => {
   const [search, setSearch] = useState("");
   const [openForId, setOpenForId] = useState(null);
   const navigate = useNavigate();
- const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     (async () => {
       try {
@@ -81,6 +82,14 @@ const ConsultantList = () => {
                 title="הוספה/צפייה בהערות ליועצת"
               >
                 הערות
+              </button>
+
+              {/* כפתור משימות */}
+              <button
+                onClick={() => navigate(`/tasks?consultant=${c._id}`)}
+                title="צפייה/הוספת משימות ליועצת"
+              >
+                משימות
               </button>
             </div>
           </li>
