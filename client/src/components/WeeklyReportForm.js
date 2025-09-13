@@ -20,12 +20,19 @@ const WeeklyReportForm = () => {
     const fetchKindergartens = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return;
+        if (!token) {
+          console.log("אין טוקן - לא ניתן לטעון גנים");
+          return;
+        }
         const res = await axios.get("http://localhost:2025/api/Kindergarten", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log("תגובת שרת גנים:", res.data);
         setKindergartensList(Array.isArray(res.data) ? res.data : []);
-      } catch {}
+      } catch (error) {
+        console.error("שגיאה בטעינת גנים:", error);
+        setKindergartensList([]);
+      }
     };
     fetchKindergartens();
   }, []);
@@ -62,7 +69,7 @@ const WeeklyReportForm = () => {
     (Array.isArray(arr) ? arr : []).map((d) => ({
       date: d?.date || new Date().toISOString(),
       dayOfWeek: d?.dayOfWeek ?? new Date(d?.date || Date.now()).getDay(),
-      totalHours: Number.isFinite(Number(d?.totalHours)) ? Number(d?.totalHours) : 0,
+      totalHours: Number.isFinite(Number(d?.totalHours)) && Number(d?.totalHours) > 0 ? Number(d?.totalHours) : "",
       notes: d?.notes || "",
       kindergartens: Array.isArray(d?.kindergartens) ? d.kindergartens : [],
       tasks: Array.isArray(d?.tasks) ? d.tasks : [],
@@ -71,7 +78,7 @@ const WeeklyReportForm = () => {
   const makeEmptyDay = () => ({
     date: new Date().toISOString(),
     dayOfWeek: new Date().getDay(),
-    totalHours: 0,
+    totalHours: "",
     notes: "",
     kindergartens: [],
     tasks: [],
@@ -278,190 +285,262 @@ const WeeklyReportForm = () => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto border rounded">
-      <h2 className="text-xl font-bold mb-4">דוח שבועי - יצירה ועריכה</h2>
-
-      {!currentId && (
-        <>
-          <input
-            type="date"
-            value={weekStartDate}
-            onChange={(e) => setWeekStartDate(e.target.value)}
-            className="border p-2 rounded w-full mb-3"
-          />
+    <div className="p-4 max-w-5xl mx-auto">
+      <div className="bg-white rounded-lg shadow p-4">
+        <div className="flex items-center justify-between mb-4">
           <button
-            onClick={createTemplate}
-            className="bg-blue-600 text-white px-4 py-2 rounded mb-4 disabled:opacity-60"
-            disabled={!token || creating}
-            title={!token ? "חסר טוקן – התחבר/י" : ""}
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/consultant-dashboard";
+                }
+              } else {
+                window.location.href = "/";
+              }
+            }}
+            className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
           >
-            {creating ? "יוצר..." : "צור תבנית לשבוע"}
+            ← דף הבית
           </button>
-        </>
-      )}
-
-      {currentId && dailyWork.length === 0 && (
-        <div className="mb-4">
-          <p className="text-gray-600 mb-2">לא קיימים ימים בתבנית.</p>
-          <button
-            onClick={() => setDailyWork([makeEmptyDay()])}
-            className="bg-gray-700 text-white px-3 py-2 rounded"
-          >
-            הוסף יום
-          </button>
+          <h2 className="text-xl font-bold">דוח שבועי</h2>
+          <div></div>
         </div>
-      )}
 
-      {dailyWork.length > 0 && (
-        <>
-          <p className="mb-2 text-sm text-gray-700">
-            סטטוס: <strong>{status === "Submitted" ? "נשלח" : "טיוטה"}</strong>
-          </p>
+        {!currentId && (
+          <div className="flex gap-2 mb-4">
+            <input
+              type="date"
+              value={weekStartDate}
+              onChange={(e) => setWeekStartDate(e.target.value)}
+              className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={createTemplate}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
+              disabled={!token || creating}
+            >
+              {creating ? "יוצר..." : "צור תבנית"}
+            </button>
+          </div>
+        )}
 
-          <label className="block mb-2">
-            הערות כלליות:
+        {currentId && dailyWork.length === 0 && (
+          <div className="bg-yellow-50 p-3 rounded mb-4">
+            <p className="text-yellow-800 mb-2">לא קיימים ימים בתבנית.</p>
+            <button
+              onClick={() => setDailyWork([makeEmptyDay()])}
+              className="bg-yellow-600 text-white px-3 py-1 rounded"
+            >
+              הוסף יום
+            </button>
+          </div>
+        )}
+
+        {dailyWork.length > 0 && (
+          <div className="mb-4">
+            <div className="flex items-center gap-4 mb-3">
+              <span className="text-sm">סטטוס: 
+                <span className={status === "Submitted" ? "text-green-600 font-semibold" : "text-orange-600 font-semibold"}>
+                  {status === "Submitted" ? "נשלח" : "טיוטה"}
+                </span>
+              </span>
+            </div>
             <textarea
               value={generalNotes}
               onChange={(e) => setGeneralNotes(e.target.value)}
-              className="border p-2 rounded w-full mt-1"
+              rows="2"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 resize-none"
+              placeholder="הערות כלליות לדוח..."
             />
-          </label>
-        </>
-      )}
+          </div>
+        )}
 
-      {dailyWork.map((day, i) => (
-        <div key={i} className="border p-3 mb-4 bg-gray-50 rounded">
-          <h3 className="font-semibold mb-2">
-            יום #{i + 1} - {new Date(day.date).toLocaleDateString()}
-          </h3>
+        <div className="space-y-4">
+          {dailyWork.map((day, i) => (
+            <div key={i} className="border rounded p-4 bg-gray-50">
+              <h3 className="font-semibold mb-3">
+                יום #{i + 1} - {new Date(day.date).toLocaleDateString('he-IL')}
+              </h3>
 
-          <input
-            type="number"
-            value={day.totalHours}
-            onChange={(e) =>
-              updateField(i, "totalHours", Number(e.target.value) || 0)
-            }
-            placeholder="סה״כ שעות"
-            className="border p-2 rounded w-full mb-2"
-          />
-          <textarea
-            value={day.notes}
-            onChange={(e) => updateField(i, "notes", e.target.value)}
-            placeholder="הערות"
-            className="border p-2 rounded w-full mb-2"
-          />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                <input
+                  type="number"
+                  value={day.totalHours}
+                  onChange={(e) => updateField(i, "totalHours", e.target.value === "" ? "" : Number(e.target.value))}
+                  placeholder="סה״כ שעות"
+                  min="0"
+                  step="0.5"
+                  className="p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <textarea
+                  value={day.notes}
+                  onChange={(e) => updateField(i, "notes", e.target.value)}
+                  placeholder="הערות יום"
+                  rows="1"
+                  className="md:col-span-2 p-2 border rounded focus:ring-2 focus:ring-blue-500 resize-none"
+                />
+              </div>
 
-          <button
-            onClick={() => addKindergarten(i)}
-            className="bg-green-600 text-white px-2 py-1 rounded mb-2"
-          >
-            הוסף גן
-          </button>
-          {(day.kindergartens || []).map((kg, k) => (
-            <div key={k} className="mb-2">
-              <select
-                value={kg.kindergarten}
-                onChange={(e) => updateKG(i, k, "kindergarten", e.target.value)}
-                className="border p-2 rounded w-full mb-1"
-              >
-                <option value="">בחר גן</option>
-                {kindergartensList.map((kgItem) => (
-                  <option key={kgItem._id} value={kgItem._id}>
-                    {kgItem.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="time"
-                value={kg.startTime || ""}
-                onChange={(e) => updateKG(i, k, "startTime", e.target.value)}
-                className="border p-2 rounded w-full mb-1"
-              />
-              <input
-                type="time"
-                value={kg.endTime || ""}
-                onChange={(e) => updateKG(i, k, "endTime", e.target.value)}
-                className="border p-2 rounded w-full mb-1"
-              />
-              <textarea
-                value={kg.notes || ""}
-                onChange={(e) => updateKG(i, k, "notes", e.target.value)}
-                className="border p-2 rounded w-full mb-2"
-              />
-            </div>
-          ))}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* גנים */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-green-700">גנים</h4>
+                    <button
+                      onClick={() => addKindergarten(i)}
+                      className="bg-green-600 text-white px-2 py-1 rounded text-xs"
+                    >
+                      + גן
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {(day.kindergartens || []).map((kg, k) => (
+                      <div key={k} className="bg-green-50 p-2 rounded border">
+                        <select
+                          value={kg.kindergarten}
+                          onChange={(e) => updateKG(i, k, "kindergarten", e.target.value)}
+                          className="w-full p-1 border rounded mb-2 text-sm"
+                        >
+                          <option value="">
+                            {kindergartensList.length === 0 ? "טוען..." : "בחר גן"}
+                          </option>
+                          {kindergartensList.map((kgItem) => (
+                            <option key={kgItem._id} value={kgItem._id}>
+                              {kgItem.name || `${kgItem.institutionSymbol} - ${kgItem.kindergartenTeacherName}`}
+                            </option>
+                          ))}
+                        </select>
+                        
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                          <input
+                            type="time"
+                            value={kg.startTime || ""}
+                            onChange={(e) => updateKG(i, k, "startTime", e.target.value)}
+                            className="p-1 border rounded text-sm"
+                          />
+                          <input
+                            type="time"
+                            value={kg.endTime || ""}
+                            onChange={(e) => updateKG(i, k, "endTime", e.target.value)}
+                            className="p-1 border rounded text-sm"
+                          />
+                        </div>
+                        
+                        <textarea
+                          value={kg.notes || ""}
+                          onChange={(e) => updateKG(i, k, "notes", e.target.value)}
+                          rows="1"
+                          className="w-full p-1 border rounded text-sm resize-none"
+                          placeholder="הערות..."
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-          <button
-            onClick={() => addTask(i)}
-            className="bg-purple-600 text-white px-2 py-1 rounded mb-2"
-          >
-            הוסף משימה
-          </button>
-          {(day.tasks || []).map((task, t) => (
-            <div key={t} className="mb-2">
-              <input
-                placeholder="כותרת"
-                value={task.task?.title || ""}
-                onChange={(e) => updateTask(i, t, "task.title", e.target.value)}
-                className="border p-2 rounded w-full mb-1"
-              />
-              <input
-                placeholder="סוג"
-                value={task.task?.type || ""}
-                onChange={(e) => updateTask(i, t, "task.type", e.target.value)}
-                className="border p-2 rounded w-full mb-1"
-              />
-              <textarea
-                placeholder="תיאור"
-                value={task.task?.description || ""}
-                onChange={(e) =>
-                  updateTask(i, t, "task.description", e.target.value)
-                }
-                className="border p-2 rounded w-full mb-1"
-              />
-              <input
-                type="time"
-                value={task.startTime || ""}
-                onChange={(e) => updateTask(i, t, "startTime", e.target.value)}
-                className="border p-2 rounded w-full mb-1"
-              />
-              <input
-                type="time"
-                value={task.endTime || ""}
-                onChange={(e) => updateTask(i, t, "endTime", e.target.value)}
-                className="border p-2 rounded w-full mb-2"
-              />
-              <textarea
-                placeholder="הערות"
-                value={task.notes || ""}
-                onChange={(e) => updateTask(i, t, "notes", e.target.value)}
-                className="border p-2 rounded w-full mb-2"
-              />
+                {/* משימות */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-purple-700">משימות</h4>
+                    <button
+                      onClick={() => addTask(i)}
+                      className="bg-purple-600 text-white px-2 py-1 rounded text-xs"
+                    >
+                      + משימה
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {(day.tasks || []).map((task, t) => (
+                      <div key={t} className="bg-purple-50 p-2 rounded border">
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                          <input
+                            value={task.task?.title || ""}
+                            onChange={(e) => updateTask(i, t, "task.title", e.target.value)}
+                            placeholder="כותרת"
+                            className="p-1 border rounded text-sm"
+                          />
+                          <input
+                            value={task.task?.type || ""}
+                            onChange={(e) => updateTask(i, t, "task.type", e.target.value)}
+                            placeholder="סוג"
+                            className="p-1 border rounded text-sm"
+                          />
+                        </div>
+                        
+                        <textarea
+                          value={task.task?.description || ""}
+                          onChange={(e) => updateTask(i, t, "task.description", e.target.value)}
+                          rows="1"
+                          placeholder="תיאור"
+                          className="w-full p-1 border rounded text-sm mb-2 resize-none"
+                        />
+                        
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                          <input
+                            type="time"
+                            value={task.startTime || ""}
+                            onChange={(e) => updateTask(i, t, "startTime", e.target.value)}
+                            className="p-1 border rounded text-sm"
+                          />
+                          <input
+                            type="time"
+                            value={task.endTime || ""}
+                            onChange={(e) => updateTask(i, t, "endTime", e.target.value)}
+                            className="p-1 border rounded text-sm"
+                          />
+                        </div>
+                        
+                        <textarea
+                          value={task.notes || ""}
+                          onChange={(e) => updateTask(i, t, "notes", e.target.value)}
+                          rows="1"
+                          placeholder="הערות"
+                          className="w-full p-1 border rounded text-sm resize-none"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
-      ))}
 
-      {(currentId || dailyWork.length > 0) && (
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() => saveReport(false)}
-            className="bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-60"
-            disabled={saving}
-          >
-            {saving ? "שומר..." : "שמור דוח"}
-          </button>
-          <button
-            onClick={() => saveReport(true)}
-            className="bg-green-700 text-white px-4 py-2 rounded disabled:opacity-60"
-            disabled={saving}
-          >
-            {saving ? "שולח..." : "שלח דוח סופי"}
-          </button>
-        </div>
-      )}
+        {(currentId || dailyWork.length > 0) && (
+          <div className="flex gap-2 mt-4 pt-4 border-t">
+            <button
+              onClick={() => saveReport(false)}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
+              disabled={saving}
+            >
+              {saving ? "שומר..." : "שמור"}
+            </button>
+            <button
+              onClick={() => saveReport(true)}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50"
+              disabled={saving}
+            >
+              {saving ? "שולח..." : "שלח סופי"}
+            </button>
+          </div>
+        )}
 
-      {message && <p className="mt-3 text-blue-800">{message}</p>}
+        {message && (
+          <div className={`mt-3 p-3 rounded text-sm ${
+            message.includes("שגיאה") || message.includes("לא נמצא") 
+              ? "bg-red-50 text-red-800" 
+              : "bg-blue-50 text-blue-800"
+          }`}>
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

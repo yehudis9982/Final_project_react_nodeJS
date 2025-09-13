@@ -16,6 +16,7 @@ import Header from './components/Header'
 import UpdateWorkSchedule from './components/UpdateWorkSchedule';
 import SupervisorWeeklyReports from './components/SuperviserReport';
 import SupervisorNotes from './components/SupervisorNotes';
+import ConsultantDashboard from './components/ConsultantDashboard';
 function App() {
   // דוגמה לסטייט של consultant
   const [consultant, setConsultant] = useState({ name: "מפקחת" });
@@ -44,6 +45,8 @@ function App() {
         <Route path="/UpdateWorkSchdule" element={<UpdateWorkSchedule/>  } />
         <Route path="/reports" element={<SupervisorWeeklyReports/>  } />
         <Route path="/supervisor-notes" element={<SupervisorNotes />} />
+        <Route path="/consultant-dashboard" element={<ConsultantDashboard />} />
+
 
       </Routes>
     </BrowserRouter>

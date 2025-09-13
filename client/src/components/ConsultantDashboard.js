@@ -1,8 +1,6 @@
 import React from "react"
 
 const ConsultantDashboard = ({ consultant }) => {
- 
-
   return (
     <div>
       {!consultant

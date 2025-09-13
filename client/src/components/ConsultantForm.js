@@ -24,8 +24,39 @@ const ConsultantForm = ({ token }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>הוספת יועצת חדשה</h2>
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <button
+          type="button"
+          onClick={() => {
+            const token = localStorage.getItem("token");
+            if (token) {
+              const decoded = JSON.parse(atob(token.split('.')[1]));
+              if (decoded?.roles === "Supervisor") {
+                window.location.href = "/supervisor-dashboard";
+              } else {
+                window.location.href = "/";
+              }
+            } else {
+              window.location.href = "/";
+            }
+          }}
+          style={{
+            background: "#6b7280",
+            color: "white",
+            border: "none",
+            padding: "6px 12px",
+            borderRadius: 4,
+            fontSize: "14px",
+            cursor: "pointer"
+          }}
+        >
+          ← דף הבית
+        </button>
+        <h2 style={{ margin: 0 }}>הוספת יועצת חדשה</h2>
+        <div></div>
+      </div>
+      <form onSubmit={handleSubmit}>
       {error && <div style={{ color: "red" }}>{error}</div>}
       <input
         name="firstName"
@@ -77,8 +108,9 @@ const ConsultantForm = ({ token }) => {
         onChange={handleChange}
         required
       />
-      <button type="submit">הוספה</button>
-    </form>
+        <button type="submit">הוספה</button>
+      </form>
+    </div>
   );
 };
 

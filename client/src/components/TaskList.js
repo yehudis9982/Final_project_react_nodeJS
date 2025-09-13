@@ -55,7 +55,36 @@ const TaskList = () => {
 
   return (
     <div>
-      <h3>המשימות {consultantId ? "ליועצת" : "שלי"}</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <button
+          onClick={() => {
+            const token = localStorage.getItem("token");
+            if (token) {
+              const decoded = JSON.parse(atob(token.split('.')[1]));
+              if (decoded?.roles === "Supervisor") {
+                window.location.href = "/supervisor-dashboard";
+              } else {
+                window.location.href = "/consultant-dashboard";
+              }
+            } else {
+              window.location.href = "/";
+            }
+          }}
+          style={{
+            background: "#6b7280",
+            color: "white",
+            border: "none",
+            padding: "6px 12px",
+            borderRadius: 4,
+            fontSize: "14px",
+            cursor: "pointer"
+          }}
+        >
+          ← דף הבית
+        </button>
+        <h3 style={{ margin: 0 }}>המשימות {consultantId ? "ליועצת" : "שלי"}</h3>
+        <div></div>
+      </div>
       <button onClick={() => navigate(`/add-task${consultantId ? `?consultant=${consultantId}` : ""}`)}>
         הוספת משימה חדשה
       </button>

@@ -36,7 +36,36 @@ const ConsultantList = () => {
 
   return (
     <div dir="rtl">
-      <h2>רשימת יועצות</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <button
+          onClick={() => {
+            const token = localStorage.getItem("token");
+            if (token) {
+              const decoded = JSON.parse(atob(token.split('.')[1]));
+              if (decoded?.roles === "Supervisor") {
+                window.location.href = "/supervisor-dashboard";
+              } else {
+                window.location.href = "/";
+              }
+            } else {
+              window.location.href = "/";
+            }
+          }}
+          style={{
+            background: "#6b7280",
+            color: "white",
+            border: "none",
+            padding: "6px 12px",
+            borderRadius: 4,
+            fontSize: "14px",
+            cursor: "pointer"
+          }}
+        >
+          ← דף הבית
+        </button>
+        <h2 style={{ margin: 0 }}>רשימת יועצות</h2>
+        <div></div>
+      </div>
 
       <button
         style={{ marginBottom: 10, display: "inline-block" }}
