@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
+import { Button, TextField, Checkbox, FormControlLabel, Typography, Box } from "@mui/material";
+import "../css/ConsultantNotesModal.css";
 
 export default function ConsultantNotesModal({ open, onClose, consultantId, token }) {
   const [notes, setNotes] = useState([]);
@@ -75,84 +77,88 @@ export default function ConsultantNotesModal({ open, onClose, consultantId, toke
   if (!open) return null;
 
   return (
-    <div style={styles.backdrop}>
-      <div style={styles.modal} dir="rtl">
-        <div style={styles.header}>
-          <strong>הערות למטפלת</strong>
-          <button onClick={onClose}>סגור</button>
-        </div>
+    <div className="notes-backdrop">
+      <Box className="notes-modal" dir="rtl">
+        <Box className="notes-header">
+          <Typography variant="h6"><strong>הערות למטפלת</strong></Typography>
+          <Button variant="outlined" color="secondary" onClick={onClose}>סגור</Button>
+        </Box>
 
-        <div style={{ marginBottom: 8 }}>
-          <textarea
+        <Box className="notes-form">
+          <TextField
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="כתוב/י הערה..."
+            multiline
             rows={3}
-            style={{ width: "100%" }}
+            fullWidth
+            margin="normal"
           />
-          <label style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <input type="checkbox" checked={pinned} onChange={(e) => setPinned(e.target.checked)} />
-            להצמדה
-          </label>
-          <div>
-            <button onClick={addNote} disabled={loading || !text.trim()}>הוספה</button>
-          </div>
-        </div>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={pinned}
+                onChange={(e) => setPinned(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="להצמדה"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={addNote}
+            disabled={loading || !text.trim()}
+            className="add-note-btn"
+          >
+            הוספה
+          </Button>
+        </Box>
 
         {loading ? (
-          <div>טוען...</div>
+          <Typography align="center">טוען...</Typography>
         ) : error ? (
-          <div style={{ color: "#c00" }}>{error}</div>
+          <Typography color="error" align="center">{error}</Typography>
         ) : (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {notes.length === 0 && <li style={{ color: "#666" }}>אין הערות</li>}
+          <ul className="notes-list">
+            {notes.length === 0 && <li className="notes-empty">אין הערות</li>}
             {notes.map((n) => (
-              <li key={n._id} style={styles.noteItem}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                  <div>
-                    <div style={{ fontWeight: 600 }}>
+              <li key={n._id} className="note-item">
+                <Box display="flex" justifyContent="space-between" gap={2}>
+                  <Box>
+                    <Typography fontWeight={600}>
                       {n?.author?.firstName} {n?.author?.lastName}
-                      {n.pinned ? <span style={styles.badge}>מוצמד</span> : null}
-                    </div>
-                    <div style={{ whiteSpace: "pre-wrap" }}>{n.text}</div>
-                    <div style={{ fontSize: 12, color: "#666" }}>
+                      {n.pinned ? <span className="note-badge">מוצמד</span> : null}
+                    </Typography>
+                    <Typography style={{ whiteSpace: "pre-wrap" }}>{n.text}</Typography>
+                    <Typography variant="caption" color="text.secondary">
                       {new Date(n.createdAt).toLocaleString("he-IL")}
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <button onClick={() => togglePin(n._id, n.pinned)}>
+                    </Typography>
+                  </Box>
+                  <Box display="flex" gap={1}>
+                    <Button
+                      variant="text"
+                      color="warning"
+                      size="small"
+                      onClick={() => togglePin(n._id, n.pinned)}
+                    >
                       {n.pinned ? "בטל הצמדה" : "הצמד"}
-                    </button>
-                    <button onClick={() => removeNote(n._id)}>מחק</button>
-                  </div>
-                </div>
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="error"
+                      size="small"
+                      onClick={() => removeNote(n._id)}
+                    >
+                      מחק
+                    </Button>
+                  </Box>
+                </Box>
               </li>
             ))}
           </ul>
         )}
-      </div>
+      </Box>
     </div>
   );
 }
-
-const styles = {
-  backdrop: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.35)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 999,
-  },
-  modal: {
-    width: "min(720px, 96vw)",
-    background: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-  },
-  header: { display: "flex", justifyContent: "space-between", marginBottom: 8 },
-  noteItem: { border: "1px solid #eee", borderRadius: 8, padding: 8, marginBottom: 8 },
-  badge: { marginInlineStart: 8, fontSize: 11, color: "#444", background: "#eee", padding: "2px 6px", borderRadius: 6 },
-};

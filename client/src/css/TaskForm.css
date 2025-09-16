@@ -1,0 +1,79 @@
+.task-container {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+.task-paper {
+  padding: 32px 24px;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(63, 81, 181, 0.1);
+  margin-bottom: 32px;
+  background: #fff;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e3f2fd;
+  padding-bottom: 16px;
+}
+
+.task-header h5 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  color: #3f51b5;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.home-btn {
+  min-width: 100px;
+  background-color: #5c6bc0 !important;
+}
+
+.task-form {
+  margin-top: 8px;
+  background-color: #f9fafc;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.task-form .MuiTextField-root {
+  margin-bottom: 16px !important;
+}
+
+.task-form .MuiInputBase-root {
+  background-color: white;
+  border-radius: 8px;
+}
+
+.task-btn {
+  margin-top: 24px !important;
+  font-weight: bold;
+  letter-spacing: 1px;
+  background-color: #3f51b5 !important;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2) !important;
+  padding: 10px 24px !important;
+}
+
+.task-footer {
+  width: 100%;
+  padding: 16px 0;
+  background: rgba(255,255,255,0.8);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  color: #3f51b5;
+}

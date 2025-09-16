@@ -1,12 +1,13 @@
 import React, { useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { Paper, Typography, Box, Button, TextField, Select, MenuItem } from "@mui/material";
+import "../css/WeeklyReportForm.css";
 
 const WeeklyReportForm = () => {
   const { reportId: reportIdFromUrl } = useParams();
 
   const [currentId, setCurrentId] = useState(reportIdFromUrl || null);
-
   const [weekStartDate, setWeekStartDate] = useState("");
   const [dailyWork, setDailyWork] = useState([]);
   const [generalNotes, setGeneralNotes] = useState("");
@@ -20,17 +21,12 @@ const WeeklyReportForm = () => {
     const fetchKindergartens = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          console.log("אין טוקן - לא ניתן לטעון גנים");
-          return;
-        }
+        if (!token) return;
         const res = await axios.get("http://localhost:2025/api/Kindergarten", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("תגובת שרת גנים:", res.data);
         setKindergartensList(Array.isArray(res.data) ? res.data : []);
-      } catch (error) {
-        console.error("שגיאה בטעינת גנים:", error);
+      } catch {
         setKindergartensList([]);
       }
     };
@@ -84,7 +80,6 @@ const WeeklyReportForm = () => {
     tasks: [],
   });
 
-  // טעינת דוח לעריכה אם יש מזהה
   useEffect(() => {
     if (!currentId) return;
     const fetchReport = async () => {
@@ -131,7 +126,6 @@ const WeeklyReportForm = () => {
 
       setCurrentId(id);
 
-      // משוך מיד את הדוח המלא כדי למלא dailyWork להצגה
       try {
         const { data: full } = await client.get(`/WeeklyReport/${id}`);
         const days = safeDW(full.dailyWork);
@@ -285,10 +279,12 @@ const WeeklyReportForm = () => {
   };
 
   return (
-    <div className="p-4 max-w-5xl mx-auto">
-      <div className="bg-white rounded-lg shadow p-4">
-        <div className="flex items-center justify-between mb-4">
-          <button
+    <Box className="weekly-report-form-container">
+      <Paper elevation={3} className="weekly-report-form-paper">
+        <Box className="weekly-report-form-header">
+          <Button
+            variant="contained"
+            color="secondary"
             onClick={() => {
               const token = localStorage.getItem("token");
               if (token) {
@@ -302,246 +298,269 @@ const WeeklyReportForm = () => {
                 window.location.href = "/";
               }
             }}
-            className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
+            className="home-btn"
           >
             ← דף הבית
-          </button>
-          <h2 className="text-xl font-bold">דוח שבועי</h2>
-          <div></div>
-        </div>
+          </Button>
+          <Typography variant="h6" align="center" sx={{ flex: 1 }}>
+            דוח שבועי
+          </Typography>
+        </Box>
 
         {!currentId && (
-          <div className="flex gap-2 mb-4">
-            <input
+          <Box className="weekly-report-form-date-row">
+            <TextField
               type="date"
               value={weekStartDate}
               onChange={(e) => setWeekStartDate(e.target.value)}
-              className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500"
+              label="תאריך תחילת שבוע"
+              InputLabelProps={{ shrink: true }}
+              size="small"
+              className="weekly-report-date-input"
             />
-            <button
+            <Button
+              variant="contained"
+              color="primary"
               onClick={createTemplate}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
               disabled={!token || creating}
+              className="weekly-report-create-btn"
             >
               {creating ? "יוצר..." : "צור תבנית"}
-            </button>
-          </div>
+            </Button>
+          </Box>
         )}
 
         {currentId && dailyWork.length === 0 && (
-          <div className="bg-yellow-50 p-3 rounded mb-4">
-            <p className="text-yellow-800 mb-2">לא קיימים ימים בתבנית.</p>
-            <button
+          <Box className="weekly-report-form-empty-days">
+            <Typography color="warning.main" gutterBottom>
+              לא קיימים ימים בתבנית.
+            </Typography>
+            <Button
+              variant="contained"
+              color="warning"
               onClick={() => setDailyWork([makeEmptyDay()])}
-              className="bg-yellow-600 text-white px-3 py-1 rounded"
             >
               הוסף יום
-            </button>
-          </div>
+            </Button>
+          </Box>
         )}
 
         {dailyWork.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center gap-4 mb-3">
-              <span className="text-sm">סטטוס: 
-                <span className={status === "Submitted" ? "text-green-600 font-semibold" : "text-orange-600 font-semibold"}>
-                  {status === "Submitted" ? "נשלח" : "טיוטה"}
-                </span>
+          <Box className="weekly-report-form-status-row">
+            <Typography variant="body2">
+              סטטוס:{" "}
+              <span className={status === "Submitted" ? "weekly-report-status-submitted" : "weekly-report-status-draft"}>
+                {status === "Submitted" ? "נשלח" : "טיוטה"}
               </span>
-            </div>
-            <textarea
+            </Typography>
+            <TextField
               value={generalNotes}
               onChange={(e) => setGeneralNotes(e.target.value)}
-              rows="2"
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="הערות כלליות לדוח..."
+              multiline
+              rows={2}
+              fullWidth
+              label="הערות כלליות לדוח"
+              margin="normal"
             />
-          </div>
+          </Box>
         )}
 
-        <div className="space-y-4">
+        <Box className="weekly-report-form-days-list">
           {dailyWork.map((day, i) => (
-            <div key={i} className="border rounded p-4 bg-gray-50">
-              <h3 className="font-semibold mb-3">
+            <Paper key={i} elevation={1} className="weekly-report-form-day">
+              <Typography fontWeight="bold" gutterBottom>
                 יום #{i + 1} - {new Date(day.date).toLocaleDateString('he-IL')}
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                <input
+              </Typography>
+              <Box display="flex" gap={2} mb={2}>
+                <TextField
                   type="number"
                   value={day.totalHours}
                   onChange={(e) => updateField(i, "totalHours", e.target.value === "" ? "" : Number(e.target.value))}
-                  placeholder="סה״כ שעות"
-                  min="0"
-                  step="0.5"
-                  className="p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                  label="סה״כ שעות"
+                  inputProps={{ min: 0, step: 0.5 }}
+                  size="small"
+                  className="weekly-report-hours-input"
                 />
-                <textarea
+                <TextField
                   value={day.notes}
                   onChange={(e) => updateField(i, "notes", e.target.value)}
-                  placeholder="הערות יום"
-                  rows="1"
-                  className="md:col-span-2 p-2 border rounded focus:ring-2 focus:ring-blue-500 resize-none"
+                  label="הערות יום"
+                  multiline
+                  rows={1}
+                  size="small"
+                  className="weekly-report-notes-input"
                 />
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* גנים */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-green-700">גנים</h4>
-                    <button
+              </Box>
+              <Box display="flex" gap={4}>
+                <Box flex={1}>
+                  <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                    <Typography fontWeight="medium" color="green">גנים</Typography>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      size="small"
                       onClick={() => addKindergarten(i)}
-                      className="bg-green-600 text-white px-2 py-1 rounded text-xs"
                     >
                       + גן
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-2">
+                    </Button>
+                  </Box>
+                  <Box>
                     {(day.kindergartens || []).map((kg, k) => (
-                      <div key={k} className="bg-green-50 p-2 rounded border">
-                        <select
+                      <Paper key={k} elevation={0} className="weekly-report-form-kindergarten">
+                        <Select
                           value={kg.kindergarten}
                           onChange={(e) => updateKG(i, k, "kindergarten", e.target.value)}
-                          className="w-full p-1 border rounded mb-2 text-sm"
+                          displayEmpty
+                          size="small"
+                          className="weekly-report-kindergarten-select"
                         >
-                          <option value="">
+                          <MenuItem value="">
                             {kindergartensList.length === 0 ? "טוען..." : "בחר גן"}
-                          </option>
+                          </MenuItem>
                           {kindergartensList.map((kgItem) => (
-                            <option key={kgItem._id} value={kgItem._id}>
+                            <MenuItem key={kgItem._id} value={kgItem._id}>
                               {kgItem.name || `${kgItem.institutionSymbol} - ${kgItem.kindergartenTeacherName}`}
-                            </option>
+                            </MenuItem>
                           ))}
-                        </select>
-                        
-                        <div className="grid grid-cols-2 gap-2 mb-2">
-                          <input
+                        </Select>
+                        <Box display="flex" gap={2} mb={1}>
+                          <TextField
                             type="time"
                             value={kg.startTime || ""}
                             onChange={(e) => updateKG(i, k, "startTime", e.target.value)}
-                            className="p-1 border rounded text-sm"
+                            label="שעת התחלה"
+                            size="small"
                           />
-                          <input
+                          <TextField
                             type="time"
                             value={kg.endTime || ""}
                             onChange={(e) => updateKG(i, k, "endTime", e.target.value)}
-                            className="p-1 border rounded text-sm"
+                            label="שעת סיום"
+                            size="small"
                           />
-                        </div>
-                        
-                        <textarea
+                        </Box>
+                        <TextField
                           value={kg.notes || ""}
                           onChange={(e) => updateKG(i, k, "notes", e.target.value)}
-                          rows="1"
-                          className="w-full p-1 border rounded text-sm resize-none"
-                          placeholder="הערות..."
+                          label="הערות"
+                          multiline
+                          rows={1}
+                          size="small"
+                          fullWidth
                         />
-                      </div>
+                      </Paper>
                     ))}
-                  </div>
-                </div>
-
-                {/* משימות */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-purple-700">משימות</h4>
-                    <button
+                  </Box>
+                </Box>
+                <Box flex={1}>
+                  <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                    <Typography fontWeight="medium" color="purple">משימות</Typography>
+                    <Button
+                      variant="contained"
+                      color="info"
+                      size="small"
                       onClick={() => addTask(i)}
-                      className="bg-purple-600 text-white px-2 py-1 rounded text-xs"
                     >
                       + משימה
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-2">
+                    </Button>
+                  </Box>
+                  <Box>
                     {(day.tasks || []).map((task, t) => (
-                      <div key={t} className="bg-purple-50 p-2 rounded border">
-                        <div className="grid grid-cols-2 gap-2 mb-2">
-                          <input
+                      <Paper key={t} elevation={0} className="weekly-report-form-task">
+                        <Box display="flex" gap={2} mb={1}>
+                          <TextField
                             value={task.task?.title || ""}
                             onChange={(e) => updateTask(i, t, "task.title", e.target.value)}
-                            placeholder="כותרת"
-                            className="p-1 border rounded text-sm"
+                            label="כותרת"
+                            size="small"
                           />
-                          <input
+                          <TextField
                             value={task.task?.type || ""}
                             onChange={(e) => updateTask(i, t, "task.type", e.target.value)}
-                            placeholder="סוג"
-                            className="p-1 border rounded text-sm"
+                            label="סוג"
+                            size="small"
                           />
-                        </div>
-                        
-                        <textarea
+                        </Box>
+                        <TextField
                           value={task.task?.description || ""}
                           onChange={(e) => updateTask(i, t, "task.description", e.target.value)}
-                          rows="1"
-                          placeholder="תיאור"
-                          className="w-full p-1 border rounded text-sm mb-2 resize-none"
+                          label="תיאור"
+                          multiline
+                          rows={1}
+                          size="small"
+                          fullWidth
+                          margin="dense"
                         />
-                        
-                        <div className="grid grid-cols-2 gap-2 mb-2">
-                          <input
+                        <Box display="flex" gap={2} mb={1}>
+                          <TextField
                             type="time"
                             value={task.startTime || ""}
                             onChange={(e) => updateTask(i, t, "startTime", e.target.value)}
-                            className="p-1 border rounded text-sm"
+                            label="שעת התחלה"
+                            size="small"
                           />
-                          <input
+                          <TextField
                             type="time"
                             value={task.endTime || ""}
                             onChange={(e) => updateTask(i, t, "endTime", e.target.value)}
-                            className="p-1 border rounded text-sm"
+                            label="שעת סיום"
+                            size="small"
                           />
-                        </div>
-                        
-                        <textarea
+                        </Box>
+                        <TextField
                           value={task.notes || ""}
                           onChange={(e) => updateTask(i, t, "notes", e.target.value)}
-                          rows="1"
-                          placeholder="הערות"
-                          className="w-full p-1 border rounded text-sm resize-none"
+                          label="הערות"
+                          multiline
+                          rows={1}
+                          size="small"
+                          fullWidth
                         />
-                      </div>
+                      </Paper>
                     ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
           ))}
-        </div>
+        </Box>
 
         {(currentId || dailyWork.length > 0) && (
-          <div className="flex gap-2 mt-4 pt-4 border-t">
-            <button
+          <Box className="weekly-report-form-actions">
+            <Button
+              variant="contained"
+              color="primary"
               onClick={() => saveReport(false)}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-50"
               disabled={saving}
+              className="weekly-report-save-btn"
             >
               {saving ? "שומר..." : "שמור"}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
               onClick={() => saveReport(true)}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50"
               disabled={saving}
+              className="weekly-report-submit-btn"
             >
               {saving ? "שולח..." : "שלח סופי"}
-            </button>
-          </div>
+            </Button>
+          </Box>
         )}
 
         {message && (
-          <div className={`mt-3 p-3 rounded text-sm ${
-            message.includes("שגיאה") || message.includes("לא נמצא") 
-              ? "bg-red-50 text-red-800" 
-              : "bg-blue-50 text-blue-800"
-          }`}>
+          <Box
+            className={`weekly-report-form-message ${
+              message.includes("שגיאה") || message.includes("לא נמצא")
+                ? "weekly-report-message-error"
+                : "weekly-report-message-info"
+            }`}
+          >
             {message}
-          </div>
+          </Box>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 };
 

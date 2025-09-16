@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
+import { TextField, Button, Paper, Typography, Box, List, ListItem, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import "../css/KindergartenList.css";
+import "../css/Dialogs.css";
 
 const KindergartenList = () => {
   const [kindergartens, setKindergartens] = useState([]);
@@ -8,6 +11,7 @@ const KindergartenList = () => {
   const [message, setMessage] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     institutionSymbol: "",
     street: "",
@@ -22,7 +26,6 @@ const KindergartenList = () => {
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
 
-  // טען את הגנים של היועצת
   const fetchKindergartens = async () => {
     try {
       const res = await axios.get("http://localhost:2025/api/Kindergarten", { headers });
@@ -39,12 +42,52 @@ const KindergartenList = () => {
     // eslint-disable-next-line
   }, []);
 
-  // עדכון ערכי הטופס
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // שמירת גן חדש או עדכון גן קיים
+  const handleDialogSubmit = async () => {
+    setError("");
+    const address = {
+      street: formData.street,
+      city: formData.city,
+      bildingNumber: formData.bildingNumber,
+      zipCode: formData.zipCode
+    };
+    try {
+      await axios.post(
+        "http://localhost:2025/api/Kindergarten",
+        {
+          institutionSymbol: formData.institutionSymbol,
+          address,
+          kindergartenTeacherName: formData.kindergartenTeacherName,
+          phone: formData.phone,
+          age: formData.age
+        },
+        { headers }
+      );
+      setMessage("הגן נוסף בהצלחה!");
+      
+      // רענון רשימת הגנים
+      fetchKindergartens();
+      
+      // סגירת הדיאלוג וניקוי הטופס
+      setIsDialogOpen(false);
+      setFormData({
+        institutionSymbol: "",
+        street: "",
+        city: "",
+        bildingNumber: "",
+        zipCode: "",
+        kindergartenTeacherName: "",
+        phone: "",
+        age: ""
+      });
+    } catch (err) {
+      setError(err?.response?.data?.message || "שגיאה בשמירת הגן");
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -100,7 +143,6 @@ const KindergartenList = () => {
     }
   };
 
-  // פתיחת טופס עדכון עם ערכי הגן
   const handleEdit = (k) => {
     setEditId(k._id);
     setFormData({
@@ -118,7 +160,6 @@ const KindergartenList = () => {
     setError("");
   };
 
-  // פתיחת טופס הוספה
   const handleAdd = () => {
     setEditId(null);
     setFormData({
@@ -140,85 +181,251 @@ const KindergartenList = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <h3>הגנים שלי</h3>
-      <button style={{ float: "left", marginBottom: 10 }} onClick={handleAdd}>
-        + הוספת גן
-      </button>
-      {showAddForm && (
-        <form onSubmit={handleFormSubmit} style={{ marginBottom: 20 }}>
-          <input
+    <Box className="kindergarten-container">
+      <Paper elevation={3} className="kindergarten-paper">
+        <Typography variant="h5" align="center" gutterBottom>
+          הגנים שלי
+        </Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => setIsDialogOpen(true)}
+          className="add-btn"
+        >
+          + הוספת גן
+        </Button>
+        {showAddForm && (
+          <form onSubmit={handleFormSubmit} className="kindergarten-form">
+            <TextField
+              name="institutionSymbol"
+              label="סמל מוסד"
+              value={formData.institutionSymbol}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="city"
+              label="עיר"
+              value={formData.city}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="street"
+              label="רחוב"
+              value={formData.street}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="bildingNumber"
+              label="מספר בניין"
+              value={formData.bildingNumber}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="zipCode"
+              label="מיקוד"
+              value={formData.zipCode}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="kindergartenTeacherName"
+              label="שם הגננת"
+              value={formData.kindergartenTeacherName}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="phone"
+              label="טלפון"
+              value={formData.phone}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="age"
+              label="גיל"
+              value={formData.age}
+              onChange={handleFormChange}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <Box display="flex" gap={2} mt={2}>
+              <Button type="submit" variant="contained" color="primary">
+                {editId ? "עדכן גן" : "הוסף גן"}
+              </Button>
+              <Button type="button" variant="outlined" color="secondary" onClick={() => setShowAddForm(false)}>
+                ביטול
+              </Button>
+            </Box>
+          </form>
+        )}
+        {message && <Typography color="success.main" align="center">{message}</Typography>}
+        <List className="kindergarten-list">
+          {kindergartens.map((k) => (
+            <ListItem key={k._id} className="kindergarten-list-item">
+              <Box flex={1}>
+                {k.institutionSymbol} — {k.kindergartenTeacherName} — {k.address?.city} {k.address?.street} {k.address?.bildingNumber}
+              </Box>
+              <Button variant="outlined" color="primary" size="small" onClick={() => handleEdit(k)}>
+                עדכן
+              </Button>
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+      
+      {/* דיאלוג להוספת גן חדש */}
+      <Dialog 
+        open={isDialogOpen} 
+        onClose={() => {
+          setIsDialogOpen(false);
+          setFormData({
+            institutionSymbol: "",
+            street: "",
+            city: "",
+            bildingNumber: "",
+            zipCode: "",
+            kindergartenTeacherName: "",
+            phone: "",
+            age: ""
+          });
+          setError("");
+        }}
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle>
+          הוספת גן חדש
+        </DialogTitle>
+        <DialogContent dividers>
+          {error && <Typography color="error" align="center">{error}</Typography>}
+          <TextField
             name="institutionSymbol"
-            placeholder="סמל מוסד"
+            label="סמל מוסד"
             value={formData.institutionSymbol}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <input
+          <TextField
             name="city"
-            placeholder="עיר"
+            label="עיר"
             value={formData.city}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <input
+          <TextField
             name="street"
-            placeholder="רחוב"
+            label="רחוב"
             value={formData.street}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <input
+          <TextField
             name="bildingNumber"
-            placeholder="מספר בניין"
+            label="מספר בניין"
             value={formData.bildingNumber}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <input
+          <TextField
             name="zipCode"
-            placeholder="מיקוד"
+            label="מיקוד"
             value={formData.zipCode}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <input
+          <TextField
             name="kindergartenTeacherName"
-            placeholder="שם הגננת"
+            label="שם הגננת"
             value={formData.kindergartenTeacherName}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <input
+          <TextField
             name="phone"
-            placeholder="טלפון"
+            label="טלפון"
             value={formData.phone}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <input
+          <TextField
             name="age"
-            placeholder="גיל"
+            label="גיל"
             value={formData.age}
             onChange={handleFormChange}
             required
+            fullWidth
+            margin="normal"
           />
-          <button type="submit">{editId ? "עדכן גן" : "הוסף גן"}</button>
-          <button type="button" onClick={() => setShowAddForm(false)}>ביטול</button>
-        </form>
-      )}
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      <ul>
-        {kindergartens.map((k) => (
-          <li key={k._id}>
-            {k.institutionSymbol} — {k.kindergartenTeacherName} — {k.address?.city} {k.address?.street} {k.address?.bildingNumber}
-            <button style={{ marginRight: 8 }} onClick={() => handleEdit(k)}>
-              עדכן
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => {
+              setIsDialogOpen(false);
+              setFormData({
+                institutionSymbol: "",
+                street: "",
+                city: "",
+                bildingNumber: "",
+                zipCode: "",
+                kindergartenTeacherName: "",
+                phone: "",
+                age: ""
+              });
+              setError("");
+            }} 
+            color="secondary"
+          >
+            ביטול
+          </Button>
+          <Button 
+            onClick={handleDialogSubmit} 
+            color="primary" 
+            variant="contained"
+          >
+            הוסף גן
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <footer className="kindergarten-footer">
+        <Typography variant="body2" align="center">
+          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
+        </Typography>
+      </footer>
+    </Box>
   );
 };
 

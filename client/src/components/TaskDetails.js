@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import { Paper, Typography, Box, Button } from "@mui/material";
+import "../css/TaskDetails.css";
 
 const TaskDetails = () => {
-  const { _id} = useParams();
+  const { _id } = useParams();
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,42 +33,47 @@ const TaskDetails = () => {
   if (!task) return <div>לא נמצאה משימה</div>;
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <button
-          onClick={() => {
-            const token = localStorage.getItem("token");
-            if (token) {
-              const decoded = JSON.parse(atob(token.split('.')[1]));
-              if (decoded?.roles === "Supervisor") {
-                window.location.href = "/supervisor-dashboard";
+    <Box className="task-details-container">
+      <Paper elevation={3} className="task-details-paper">
+        <Box className="task-details-header">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/";
+                }
               } else {
                 window.location.href = "/";
               }
-            } else {
-              window.location.href = "/";
-            }
-          }}
-          style={{
-            background: "#6b7280",
-            color: "white",
-            border: "none",
-            padding: "6px 12px",
-            borderRadius: 4,
-            fontSize: "14px",
-            cursor: "pointer"
-          }}
+            }}
+            className="home-btn"
+          >
+            ← דף הבית
+          </Button>
+          <Typography variant="h6" align="center" sx={{ flex: 1 }}>
+            פרטי משימה
+          </Typography>
+        </Box>
+        <Typography><b>כותרת:</b> {task.title}</Typography>
+        <Typography><b>תיאור:</b> {task.body}</Typography>
+        {/* אפשר להוסיף כאן שדות נוספים */}
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => navigate("/tasks")}
+          className="back-btn"
+          sx={{ mt: 2 }}
         >
-          ← דף הבית
-        </button>
-        <h3 style={{ margin: 0 }}>פרטי משימה</h3>
-        <div></div>
-      </div>
-      <div>כותרת: {task.title}</div>
-      <div>תיאור: {task.body}</div>
-      {/* אפשר להוסיף כאן שדות נוספים */}
-      <button onClick={() => navigate("/tasks")}>חזרה לרשימת המשימות</button>
-    </div>
+          חזרה לרשימת המשימות
+        </Button>
+      </Paper>
+    </Box>
   );
 };
 

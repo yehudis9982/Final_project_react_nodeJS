@@ -1,18 +1,33 @@
 import React from "react";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { AppBar, Toolbar, Button, Typography, Box } from "@mui/material";
+import "../css/Header.css";
 
 const Header = ({ onLogout }) => {
-  const navigate = useNavigate()
-const handleLogout = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
     localStorage.removeItem("token");
     if (onLogout) onLogout();
     navigate("/");
   };
 
   return (
-    <header style={{ padding: "10px", background: "#eee", marginBottom: "20px" }}>
-      <button onClick={handleLogout}>יציאה</button>
-    </header>
+    <AppBar position="static" className="header-appbar">
+      <Toolbar className="header-toolbar">
+        <Box flex={1}>
+          <Typography variant="h6" className="header-title">
+            מערכת יועצות
+          </Typography>
+        </Box>
+        <Button
+          variant="text"
+          onClick={handleLogout}
+          className="header-logout-btn"
+        >
+          יציאה
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 };
 

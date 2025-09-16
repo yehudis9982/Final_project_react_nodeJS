@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from '../api/axios';
+import { TextField, Button, Paper, Typography, Box } from '@mui/material';
+import '../css/AuthForm.css';
 
 const AuthForm = ({ onAuth }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -37,64 +39,91 @@ const AuthForm = ({ onAuth }) => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: 'auto', padding: 20 }}>
-      <h2>{isLogin ? 'כניסה ליועצת' : 'הרשמה ליועצת חדשה'}</h2>
-      <form onSubmit={handleSubmit}>
-        {!isLogin && (
-          <>
-            <input
-              type="text"
-              placeholder="שם פרטי"
-              value={firstName}
-              onChange={e => setFirstName(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="שם משפחה"
-              value={lastName}
-              onChange={e => setLastName(e.target.value)}
-              required
-            />
-            <input
-          type="text"
-          placeholder="אימייל"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="טלפון"
-          value={phone}
-          onChange={e => setPhone(e.target.value)}
-          required
-        />
-          </>
-        )}
-        
-        <input
-          type="text"
-          placeholder="סיסמה"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="תעודת זהות"
-          value={tz}
-          onChange={e => setTz(e.target.value)}
-          required
-        />
-        
-        <button type="submit">{isLogin ? 'כניסה' : 'הרשמה'}</button>
-      </form>
-      <button onClick={() => setIsLogin(!isLogin)} style={{ marginTop: 10 }}>
-        {isLogin ? 'אין לך משתמש? להרשמה' : 'יש לך משתמש? לכניסה'}
-      </button>
-      {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
-    </div>
+    <Box className="auth-container">
+      <Paper elevation={3} className="auth-paper">
+        <Typography variant="h5" align="center" gutterBottom>
+          {isLogin ? 'כניסה ליועצת' : 'הרשמה ליועצת חדשה'}
+        </Typography>
+        <form onSubmit={handleSubmit} className="auth-form">
+          {!isLogin && (
+            <>
+              <TextField
+                label="שם פרטי"
+                value={firstName}
+                onChange={e => setFirstName(e.target.value)}
+                required
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="שם משפחה"
+                value={lastName}
+                onChange={e => setLastName(e.target.value)}
+                required
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="אימייל"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="טלפון"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                required
+                fullWidth
+                margin="normal"
+              />
+            </>
+          )}
+          <TextField
+            label="סיסמה"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="תעודת זהות"
+            value={tz}
+            onChange={e => setTz(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            className="auth-btn"
+          >
+            {isLogin ? 'כניסה' : 'הרשמה'}
+          </Button>
+        </form>
+        <Button
+          onClick={() => setIsLogin(!isLogin)}
+          color="secondary"
+          fullWidth
+          className="switch-btn"
+        >
+          {isLogin ? 'אין לך משתמש? להרשמה' : 'יש לך משתמש? לכניסה'}
+        </Button>
+        {error && <Typography color="error" align="center" sx={{ mt: 2 }}>{error}</Typography>}
+      </Paper>
+      <footer className="auth-footer">
+        <Typography variant="body2" align="center">
+          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
+        </Typography>
+      </footer>
+    </Box>
   );
 };
 

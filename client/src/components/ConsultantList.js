@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "../api/axios"; // השתמש באינסטנס שלך
+import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import ConsultantNotesModal from "./ConsultantNotesModal";
+import { Paper, Typography, Box, Button, TextField, List, ListItem, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import "../css/ConsultantList.css";
+import "../css/ConsultantForm.css";
+import "../css/Dialogs.css";
 
 const REPORTS_PATH = "/reports";
 
@@ -10,6 +14,17 @@ const ConsultantList = () => {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [openForId, setOpenForId] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    tz: "",
+    password: "",
+    role: "",
+    phone: ""
+  });
+  const [formError, setFormError] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -26,6 +41,39 @@ const ConsultantList = () => {
     })();
   }, [token]);
 
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleAddConsultant = async () => {
+    try {
+      await axios.post("http://localhost:2025/api/Consultant", form, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // רענון רשימת היועצות
+      const res = await axios.get("http://localhost:2025/api/Consultant", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setConsultants(res.data || []);
+      
+      // סגירת הדיאלוג וניקוי הטופס
+      setIsDialogOpen(false);
+      setForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        tz: "",
+        password: "",
+        role: "",
+        phone: ""
+      });
+      setFormError("");
+    } catch (err) {
+      setFormError("שגיאה בהוספת יועצת");
+    }
+  };
+
   const filtered = consultants.filter((c) =>
     (`${c?.firstName ?? ""} ${c?.lastName ?? ""}`)
       .toLowerCase()
@@ -35,103 +83,224 @@ const ConsultantList = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div dir="rtl">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <button
-          onClick={() => {
-            const token = localStorage.getItem("token");
-            if (token) {
-              const decoded = JSON.parse(atob(token.split('.')[1]));
-              if (decoded?.roles === "Supervisor") {
-                window.location.href = "/supervisor-dashboard";
+    <Box className="consultant-list-container">
+      <Paper elevation={3} className="consultant-list-paper">
+        <Box className="consultant-list-header">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/";
+                }
               } else {
                 window.location.href = "/";
               }
-            } else {
-              window.location.href = "/";
-            }
-          }}
-          style={{
-            background: "#6b7280",
-            color: "white",
-            border: "none",
-            padding: "6px 12px",
-            borderRadius: 4,
-            fontSize: "14px",
-            cursor: "pointer"
-          }}
-        >
-          ← דף הבית
-        </button>
-        <h2 style={{ margin: 0 }}>רשימת יועצות</h2>
-        <div></div>
-      </div>
-
-      <button
-        style={{ marginBottom: 10, display: "inline-block" }}
-        onClick={() => navigate("/consultants/new")}
-      >
-        הוספת יועצת חדשה
-      </button>
-
-      <input
-        type="text"
-        placeholder="חיפוש לפי שם יועצת..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: 10, direction: "rtl" }}
-      />
-
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {filtered.map((c) => (
-          <li
-            key={c._id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "6px 0",
-              borderBottom: "1px solid #eee",
             }}
+            className="home-btn"
           >
-            <span style={{ flex: 1 }}>
-              {c.firstName} {c.lastName} - {c.email}
-            </span>
-
-            <div style={{ display: "flex", gap: 8 }}>
-              <button
-                onClick={() => navigate(`${REPORTS_PATH}?consultantId=${c._id}`)}
-                title="צפייה בדוחות היועצת"
-              >
-                דוחות
-              </button>
-
-              <button
-                onClick={() => setOpenForId(c._id)}
-                title="הוספה/צפייה בהערות ליועצת"
-              >
-                הערות
-              </button>
-
-              {/* כפתור משימות */}
-              <button
-                onClick={() => navigate(`/tasks?consultant=${c._id}`)}
-                title="צפייה/הוספת משימות ליועצת"
-              >
-                משימות
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-
+            ← דף הבית
+          </Button>
+          <Typography variant="h5" align="center" sx={{ flex: 1 }}>
+            רשימת יועצות
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setIsDialogOpen(true)}
+          className="add-btn"
+        >
+          הוספת יועצת חדשה
+        </Button>
+        <TextField
+          type="text"
+          placeholder="חיפוש לפי שם יועצת..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          fullWidth
+          margin="normal"
+          className="search-input"
+        />
+        <List className="consultant-list">
+          {filtered.map((c) => (
+            <ListItem
+              key={c._id}
+              className="consultant-list-item"
+              disablePadding
+            >
+              <Box flex={1}>
+                {c.firstName} {c.lastName} - {c.email}
+              </Box>
+              <Box className="consultant-list-actions">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  onClick={() => navigate(`${REPORTS_PATH}?consultantId=${c._id}`)}
+                  title="צפייה בדוחות היועצת"
+                >
+                  דוחות
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  onClick={() => setOpenForId(c._id)}
+                  title="הוספה/צפייה בהערות ליועצת"
+                >
+                  הערות
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="success"
+                  size="small"
+                  onClick={() => navigate(`/tasks?consultant=${c._id}`)}
+                  title="צפייה/הוספת משימות ליועצת"
+                >
+                  משימות
+                </Button>
+              </Box>
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
       <ConsultantNotesModal
         open={Boolean(openForId)}
         onClose={() => setOpenForId(null)}
         consultantId={openForId}
         token={token}
       />
-    </div>
+      
+      {/* דיאלוג להוספת יועצת חדשה */}
+      <Dialog 
+        open={isDialogOpen} 
+        onClose={() => {
+          setIsDialogOpen(false);
+          setForm({
+            firstName: "",
+            lastName: "",
+            email: "",
+            tz: "",
+            password: "",
+            role: "",
+            phone: ""
+          });
+          setFormError("");
+        }}
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle>
+          הוספת יועצת חדשה
+        </DialogTitle>
+        <DialogContent dividers>
+          {formError && <Typography color="error" align="center">{formError}</Typography>}
+          <TextField
+            name="firstName"
+            label="שם פרטי"
+            value={form.firstName}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="lastName"
+            label="שם משפחה"
+            value={form.lastName}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="tz"
+            label="תעודת זהות"
+            value={form.tz}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="password"
+            label="סיסמה"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="phone"
+            label="פלאפון"
+            value={form.phone}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="email"
+            label="אימייל"
+            value={form.email}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+            type="email"
+          />
+          <TextField
+            name="role"
+            label="תפקיד"
+            value={form.role}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => {
+              setIsDialogOpen(false);
+              setForm({
+                firstName: "",
+                lastName: "",
+                email: "",
+                tz: "",
+                password: "",
+                role: "",
+                phone: ""
+              });
+              setFormError("");
+            }} 
+            color="secondary"
+          >
+            ביטול
+          </Button>
+          <Button 
+            onClick={handleAddConsultant} 
+            color="primary" 
+            variant="contained"
+          >
+            הוספה
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <footer className="consultant-list-footer">
+        <Typography variant="body2" align="center">
+          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
+        </Typography>
+      </footer>
+    </Box>
   );
 };
 

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
+import { Paper, Typography, Box, List, ListItem, Chip } from '@mui/material';
+import "../css/SupervisorNotes.css";
 
 function SupervisorNotes() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const token = localStorage.getItem("token");
-  console.log("token from header:", token);
+
   useEffect(() => {
     axios.get('http://localhost:2025/api/Consultant/me/notes', {
       headers: { Authorization: `Bearer ${token}` }
@@ -25,22 +27,30 @@ function SupervisorNotes() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <h2>הערות מהמפקחת</h2>
-      {notes.length === 0 ? (
-        <div>אין הערות</div>
-      ) : (
-        <ul>
-          {notes.map(note => (
-            <li key={note._id}>
-              <div><b>תוכן:</b> {note.text}</div>
-              <div><b>נכתבה בתאריך:</b> {new Date(note.createdAt).toLocaleString()}</div>
-              {note.pinned && <div style={{color: 'red'}}>הערה מוצמדת</div>}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Box className="supervisor-notes-container">
+      <Paper elevation={3} className="supervisor-notes-paper">
+        <Typography variant="h5" align="center" gutterBottom>
+          הערות מהמפקחת
+        </Typography>
+        {notes.length === 0 ? (
+          <Typography align="center" color="text.secondary">אין הערות</Typography>
+        ) : (
+          <List className="supervisor-notes-list">
+            {notes.map(note => (
+              <ListItem key={note._id} className="supervisor-notes-list-item">
+                <Box flex={1}>
+                  <Typography><b>תוכן:</b> {note.text}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    <b>נכתבה בתאריך:</b> {new Date(note.createdAt).toLocaleString("he-IL")}
+                  </Typography>
+                </Box>
+                {note.pinned && <Chip label="הערה מוצמדת" color="error" size="small" className="supervisor-notes-pinned" />}
+              </ListItem>
+            ))}
+          </List>
+        )}
+      </Paper>
+    </Box>
   );
 }
 

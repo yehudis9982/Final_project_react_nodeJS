@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { TextField, Button, Paper, Typography, Box } from "@mui/material";
+import "../css/ConsultantForm.css";
 
 const ConsultantForm = ({ token }) => {
-  const [form, setForm] = useState({ firstName: "", lastName: "", email: "" ,tz:"",password:"",role:"",phone:""});
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    tz: "",
+    password: "",
+    role: "",
+    phone: ""
+  });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -24,93 +34,117 @@ const ConsultantForm = ({ token }) => {
   };
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <button
-          type="button"
-          onClick={() => {
-            const token = localStorage.getItem("token");
-            if (token) {
-              const decoded = JSON.parse(atob(token.split('.')[1]));
-              if (decoded?.roles === "Supervisor") {
-                window.location.href = "/supervisor-dashboard";
+    <Box className="consultant-container">
+      <Paper elevation={3} className="consultant-paper">
+        <Box className="consultant-header">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/";
+                }
               } else {
                 window.location.href = "/";
               }
-            } else {
-              window.location.href = "/";
-            }
-          }}
-          style={{
-            background: "#6b7280",
-            color: "white",
-            border: "none",
-            padding: "6px 12px",
-            borderRadius: 4,
-            fontSize: "14px",
-            cursor: "pointer"
-          }}
-        >
-          ← דף הבית
-        </button>
-        <h2 style={{ margin: 0 }}>הוספת יועצת חדשה</h2>
-        <div></div>
-      </div>
-      <form onSubmit={handleSubmit}>
-      {error && <div style={{ color: "red" }}>{error}</div>}
-      <input
-        name="firstName"
-        placeholder="שם פרטי"
-        value={form.firstName}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="lastName"
-        placeholder="שם משפחה"
-        value={form.lastName}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="tz"
-        placeholder="תעודת זהות"
-        value={form.tz}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="password"
-        placeholder="סיסמה" 
-        value={form.password}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="phone"
-        placeholder=" פאלפון"
-        value={form.phone}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="email"
-        placeholder="אימייל"
-        value={form.email}
-        onChange={handleChange}
-        required
-        type="text"
-      />
-      <input
-        name="role"
-        placeholder="תפקיד"
-        value={form.role}
-        onChange={handleChange}
-        required
-      />
-        <button type="submit">הוספה</button>
-      </form>
-    </div>
+            }}
+            className="home-btn"
+          >
+            ← דף הבית
+          </Button>
+          <Typography variant="h5" align="center" sx={{ flex: 1 }}>
+            הוספת יועצת חדשה
+          </Typography>
+        </Box>
+        <form onSubmit={handleSubmit} className="consultant-form">
+          {error && <Typography color="error" align="center">{error}</Typography>}
+          <TextField
+            name="firstName"
+            label="שם פרטי"
+            value={form.firstName}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="lastName"
+            label="שם משפחה"
+            value={form.lastName}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="tz"
+            label="תעודת זהות"
+            value={form.tz}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="password"
+            label="סיסמה"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="phone"
+            label="פלאפון"
+            value={form.phone}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="email"
+            label="אימייל"
+            value={form.email}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+            type="email"
+          />
+          <TextField
+            name="role"
+            label="תפקיד"
+            value={form.role}
+            onChange={handleChange}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            className="consultant-btn"
+          >
+            הוספה
+          </Button>
+        </form>
+      </Paper>
+      <footer className="consultant-footer">
+        <Typography variant="body2" align="center">
+          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
+        </Typography>
+      </footer>
+    </Box>
   );
 };
 

@@ -1,0 +1,52 @@
+.auth-container {
+  width: 100%;
+}
+
+.auth-paper {
+  background-color: #f9fafc !important;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.auth-form {
+  margin-top: 16px;
+}
+
+.auth-form .MuiTextField-root {
+  margin-bottom: 16px !important;
+}
+
+.auth-form .MuiInputBase-root {
+  background-color: white;
+  border-radius: 8px;
+}
+
+.auth-form .MuiInputLabel-root {
+  color: #3f51b5;
+  font-weight: 500;
+}
+
+.auth-btn {
+  margin-top: 24px !important;
+  font-weight: bold !important;
+  letter-spacing: 1px !important;
+  background-color: #3f51b5 !important;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2) !important;
+  padding: 10px !important;
+}
+
+.switch-btn {
+  margin-top: 12px !important;
+  color: #5c6bc0 !important;
+  font-weight: 500 !important;
+}
+
+.auth-footer {
+  width: 100%;
+  padding: 16px 0;
+  background: rgba(255,255,255,0.8);
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  text-align: center;
+  color: #3f51b5;
+}

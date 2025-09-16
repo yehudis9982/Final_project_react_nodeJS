@@ -1,0 +1,34 @@
+.supervisor-notes-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.supervisor-notes-paper {
+  padding: 32px 24px;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  margin-bottom: 32px;
+  background: #fff;
+}
+
+.supervisor-notes-list {
+  margin-top: 16px;
+}
+
+.supervisor-notes-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #eee;
+  padding: 8px 0;
+}
+
+.supervisor-notes-pinned {
+  margin-right: 8px;
+}

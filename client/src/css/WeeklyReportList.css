@@ -1,0 +1,141 @@
+.weekly-report-list-container {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+.weekly-report-list-paper {
+  padding: 32px 24px;
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(63, 81, 181, 0.1);
+  margin-bottom: 32px;
+  background: #fff;
+}
+
+.weekly-report-list-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.weekly-report-list-header h4 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  color: #3f51b5;
+  letter-spacing: 0.5px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.home-btn {
+  min-width: 100px;
+  background-color: #3f51b5 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(63, 81, 181, 0.3) !important;
+  background-color: #303f9f !important;
+}
+
+.weekly-report-list-empty {
+  margin: 40px 0;
+  text-align: center;
+  padding: 32px;
+  background-color: #f9fafc;
+  border-radius: 8px;
+  color: #64748b;
+}
+
+.weekly-report-list-items {
+  margin-top: 16px;
+}
+
+.weekly-report-list-item {
+  margin-bottom: 24px;
+  padding: 0;
+  border-radius: 12px;
+  background: #f9fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.weekly-report-list-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.weekly-report-list-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e3f2fd;
+  background: #e8eaf6;
+}
+
+.weekly-report-list-item-header h6 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  color: #3f51b5;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.weekly-report-list-details {
+  padding: 24px;
+}
+
+.weekly-report-list-day {
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.weekly-report-list-day h6 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  color: #3f51b5;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e3f2fd;
+}
+
+.weekly-report-list-kindergarten,
+.weekly-report-list-task {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f9fafb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+.weekly-report-list-loading {
+  padding: 40px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #3f51b5;
+}
+
+.weekly-report-list-error {
+  padding: 40px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #d32f2f;
+  background: rgba(244, 67, 54, 0.05);
+  border-radius: 8px;
+}

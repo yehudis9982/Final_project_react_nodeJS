@@ -3,6 +3,9 @@ import AuthForm from '../components/AuthForm';
 import {jwtDecode} from 'jwt-decode';
 import ConsultantDashboard from '../components/ConsultantDashboard';
 import SupervisorDashboard from '../components/SupervisorDashboard';
+import { Paper, Typography, Box } from '@mui/material';
+import '../css/Home.css';
+
 const Home = () => {
   const [user, setUser] = useState(null);
   const token = localStorage.getItem("token")
@@ -17,29 +20,40 @@ const Home = () => {
   console.log("decoded:", decoded);
 
   return (
-    <div>
-      <h1>ברוכה הבאה למערכת היועצות</h1>
+    <Box className="home-container">
       {!user ? (
-        <AuthForm onAuth={setUser} />
+        <>
+          <Paper elevation={3} className="home-paper">
+            <Typography variant="h4" className="home-title">
+              ברוכה הבאה למערכת היועצות
+            </Typography>
+            <AuthForm onAuth={setUser} />
+          </Paper>
+        </>
       ) : (
-        <div>
-          <h2>שלום {decoded?.name || decoded?.email}!</h2>
-          <p>התחברת בהצלחה.</p>
-          <div>
-          {/* אם מפקחת - הצג רשימת יועצות */}
-{decoded?.roles === "Supervisor" ? (
-  <SupervisorDashboard consultant={decoded} onLogout={() => {
-    setUser(null);
-    localStorage.removeItem("token");
-  }} />
-) : (
-  <ConsultantDashboard consultant={decoded} onLogout={() => setUser(null)} />
-)}
-        </div>
-        </div>
-        
+        <>
+          {decoded?.roles === "Supervisor" ? (
+            <SupervisorDashboard 
+              consultant={decoded} 
+              onLogout={() => {
+                setUser(null);
+                localStorage.removeItem("token");
+              }} 
+            />
+          ) : (
+            <ConsultantDashboard 
+              consultant={decoded} 
+              onLogout={() => setUser(null)} 
+            />
+          )}
+        </>
       )}
-    </div>
+      <footer className="home-footer">
+        <Typography variant="body2" align="center">
+          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
+        </Typography>
+      </footer>
+    </Box>
   );
 };
 

@@ -1,0 +1,59 @@
+.notes-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.notes-modal {
+  width: min(720px, 96vw);
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.notes-form {
+  margin-bottom: 16px;
+}
+
+.add-note-btn {
+  margin-top: 8px !important;
+}
+
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notes-empty {
+  color: #666;
+  text-align: center;
+}
+
+.note-item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.note-badge {
+  margin-inline-start: 8px;
+  font-size: 11px;
+  color: #444;
+  background: #eee;
+  padding: 2px 6px;
+  border-radius: 6px;
+}

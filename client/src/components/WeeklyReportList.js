@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { Paper, Typography, Box, Button, Chip, Collapse } from "@mui/material";
+import "../css/WeeklyReportList.css";
 
 const WeeklyReportList = () => {
   const [reports, setReports] = useState([]);
@@ -41,188 +43,190 @@ const WeeklyReportList = () => {
     return total > 0 ? total : null;
   };
 
-  const getStatusBadge = (status) => {
-    const isSubmitted = status === "Submitted";
-    return (
-      <span className={`px-2 py-1 rounded text-xs font-medium ${
-        isSubmitted ? "bg-green-100 text-green-800" : "bg-orange-100 text-orange-800"
-      }`}>
-        {isSubmitted ? "נשלח" : "טיוטה"}
-      </span>
-    );
-  };
+  const getStatusChip = (status) => (
+    <Chip
+      label={status === "Submitted" ? "נשלח" : "טיוטה"}
+      color={status === "Submitted" ? "success" : "warning"}
+      size="small"
+      sx={{ fontWeight: "bold", mx: 1 }}
+    />
+  );
 
-  if (loading) return <div className="p-4 text-center">טוען דוחות...</div>;
-  if (error) return <div className="p-4 text-red-600">{error}</div>;
+  if (loading) return <Box className="weekly-report-list-loading">טוען דוחות...</Box>;
+  if (error) return <Box className="weekly-report-list-error">{error}</Box>;
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => {
-            const token = localStorage.getItem("token");
-            if (token) {
-              const decoded = JSON.parse(atob(token.split('.')[1]));
-              if (decoded?.roles === "Supervisor") {
-                window.location.href = "/supervisor-dashboard";
+    <Box className="weekly-report-list-container">
+      <Paper elevation={3} className="weekly-report-list-paper">
+        <Box className="weekly-report-list-header">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/consultant-dashboard";
+                }
               } else {
-                window.location.href = "/consultant-dashboard";
+                window.location.href = "/";
               }
-            } else {
-              window.location.href = "/";
-            }
-          }}
-          className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
-        >
-          ← דף הבית
-        </button>
-        <h3 className="text-2xl font-bold">הדוחות השבועיים שלי</h3>
-        <div></div>
-      </div>
-      
-      {reports.length === 0 ? (
-        <div className="text-center text-gray-500 py-8">
-          <p>אין דוחות שבועיים עדיין</p>
-          <button 
-            onClick={() => navigate('/weekly-reports/new')}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            }}
+            className="home-btn"
           >
-            צור דוח חדש
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {reports.map((report) => {
-            const isExpanded = expandedReports.has(report._id);
-            const totalHours = getTotalHours(report.dailyWork);
-            
-            return (
-              <div key={report._id} className="bg-white border rounded-lg shadow-sm">
-                <div className="p-4 border-b bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <h4 className="font-semibold text-lg">
+            ← דף הבית
+          </Button>
+          <Typography variant="h5" align="center" sx={{ flex: 1 }}>
+            הדוחות השבועיים שלי
+          </Typography>
+        </Box>
+        {reports.length === 0 ? (
+          <Box className="weekly-report-list-empty">
+            <Typography align="center" color="text.secondary">
+              אין דוחות שבועיים עדיין
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate('/weekly-reports/new')}
+              sx={{ mt: 2 }}
+            >
+              צור דוח חדש
+            </Button>
+          </Box>
+        ) : (
+          <Box className="weekly-report-list-items">
+            {reports.map((report) => {
+              const isExpanded = expandedReports.has(report._id);
+              const totalHours = getTotalHours(report.dailyWork);
+
+              return (
+                <Paper key={report._id} elevation={1} className="weekly-report-list-item">
+                  <Box className="weekly-report-list-item-header">
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Typography fontWeight="bold">
                         שבוע {new Date(report.weekStartDate).toLocaleDateString('he-IL')}
-                      </h4>
-                      {getStatusBadge(report.status)}
-                      <span className="text-sm text-gray-600">
+                      </Typography>
+                      {getStatusChip(report.status)}
+                      <Typography variant="body2" color="text.secondary">
                         {totalHours ? `סה"כ ${totalHours} שעות` : 'אין שעות מדווחות'} • {(report.dailyWork || []).length} ימים
-                      </span>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <button
+                      </Typography>
+                    </Box>
+                    <Box display="flex" gap={1}>
+                      <Button
+                        variant="outlined"
+                        color="info"
+                        size="small"
                         onClick={() => toggleExpand(report._id)}
-                        className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
                       >
                         {isExpanded ? "הסתר" : "הצג פרטים"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
                         onClick={() => navigate(`/weekly-reports/edit/${report._id}`)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
                       >
                         ערוך
-                      </button>
-                    </div>
-                  </div>
-                  
+                      </Button>
+                    </Box>
+                  </Box>
                   {report.generalNotes && (
-                    <p className="mt-2 text-sm text-gray-700 bg-blue-50 p-2 rounded">
-                      <strong>הערות כלליות:</strong> {report.generalNotes}
-                    </p>
+                    <Typography variant="body2" color="primary" sx={{ mt: 1, mb: 1 }}>
+                      <b>הערות כלליות:</b> {report.generalNotes}
+                    </Typography>
                   )}
-                </div>
-
-                {isExpanded && (
-                  <div className="p-4">
-                    <div className="space-y-4">
+                  <Collapse in={isExpanded}>
+                    <Box className="weekly-report-list-details">
                       {(report.dailyWork || []).map((day, index) => (
-                        <div key={index} className="border rounded p-3 bg-gray-50">
-                          <h5 className="font-medium mb-2">
-                            יום {index + 1} - {new Date(day.date).toLocaleDateString('he-IL')} 
-                            <span className="text-sm text-gray-600 mr-2">
+                        <Paper key={index} elevation={0} className="weekly-report-list-day">
+                          <Typography fontWeight="medium" sx={{ mb: 1 }}>
+                            יום {index + 1} - {new Date(day.date).toLocaleDateString('he-IL')}
+                            <span style={{ marginRight: 8, color: "#64748b" }}>
                               {day.totalHours && Number(day.totalHours) > 0 ? `(${day.totalHours} שעות)` : '(אין שעות)'}
                             </span>
-                          </h5>
-                          
+                          </Typography>
                           {day.notes && (
-                            <p className="text-sm text-gray-700 mb-2 bg-white p-2 rounded">
-                              <strong>הערות יום:</strong> {day.notes}
-                            </p>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                              <b>הערות יום:</b> {day.notes}
+                            </Typography>
                           )}
-
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* גנים */}
+                          <Box display="flex" gap={4}>
                             {(day.kindergartens || []).length > 0 && (
-                              <div>
-                                <h6 className="font-medium text-green-700 mb-2">גנים ({day.kindergartens.length})</h6>
-                                <div className="space-y-2">
-                                  {day.kindergartens.map((kg, kgIndex) => (
-                                    <div key={kgIndex} className="bg-green-50 p-2 rounded border">
-                                      <div className="text-sm">
-                                        <div className="font-medium">גן: {
-                                          typeof kg.kindergarten === 'string' 
-                                            ? kg.kindergarten 
-                                            : kg.kindergarten?.name || kg.kindergarten?.institutionSymbol || "לא צוין"
-                                        }</div>
-                                        {(kg.startTime || kg.endTime) && (
-                                          <div className="text-gray-600">
-                                            זמן: {kg.startTime || "--"} - {kg.endTime || "--"}
-                                          </div>
-                                        )}
-                                        {kg.notes && (
-                                          <div className="text-gray-700 mt-1">{kg.notes}</div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
+                              <Box flex={1}>
+                                <Typography fontWeight="medium" color="green" sx={{ mb: 1 }}>
+                                  גנים ({day.kindergartens.length})
+                                </Typography>
+                                {(day.kindergartens || []).map((kg, kgIndex) => (
+                                  <Paper key={kgIndex} elevation={0} className="weekly-report-list-kindergarten">
+                                    <Typography variant="body2">
+                                      <b>גן:</b> {typeof kg.kindergarten === 'string'
+                                        ? kg.kindergarten
+                                        : kg.kindergarten?.name || kg.kindergarten?.institutionSymbol || "לא צוין"}
+                                    </Typography>
+                                    {(kg.startTime || kg.endTime) && (
+                                      <Typography variant="caption" color="text.secondary">
+                                        זמן: {kg.startTime || "--"} - {kg.endTime || "--"}
+                                      </Typography>
+                                    )}
+                                    {kg.notes && (
+                                      <Typography variant="caption" color="text.secondary">
+                                        {kg.notes}
+                                      </Typography>
+                                    )}
+                                  </Paper>
+                                ))}
+                              </Box>
                             )}
-
-                            {/* משימות */}
                             {(day.tasks || []).length > 0 && (
-                              <div>
-                                <h6 className="font-medium text-purple-700 mb-2">משימות ({day.tasks.length})</h6>
-                                <div className="space-y-2">
-                                  {day.tasks.map((task, taskIndex) => (
-                                    <div key={taskIndex} className="bg-purple-50 p-2 rounded border">
-                                      <div className="text-sm">
-                                        <div className="font-medium">
-                                          {task.task?.title || "משימה ללא כותרת"}
-                                          {task.task?.type && (
-                                            <span className="text-purple-600 mr-2">({task.task.type})</span>
-                                          )}
-                                        </div>
-                                        {task.task?.description && (
-                                          <div className="text-gray-700 mt-1">{task.task.description}</div>
-                                        )}
-                                        {(task.startTime || task.endTime) && (
-                                          <div className="text-gray-600">
-                                            זמן: {task.startTime || "--"} - {task.endTime || "--"}
-                                          </div>
-                                        )}
-                                        {task.notes && (
-                                          <div className="text-gray-700 mt-1 italic">{task.notes}</div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
+                              <Box flex={1}>
+                                <Typography fontWeight="medium" color="purple" sx={{ mb: 1 }}>
+                                  משימות ({day.tasks.length})
+                                </Typography>
+                                {(day.tasks || []).map((task, taskIndex) => (
+                                  <Paper key={taskIndex} elevation={0} className="weekly-report-list-task">
+                                    <Typography variant="body2">
+                                      <b>{task.task?.title || "משימה ללא כותרת"}</b>
+                                      {task.task?.type && (
+                                        <span style={{ color: "#a855f7", marginRight: 8 }}>
+                                          ({task.task.type})
+                                        </span>
+                                      )}
+                                    </Typography>
+                                    {task.task?.description && (
+                                      <Typography variant="caption" color="text.secondary">
+                                        {task.task.description}
+                                      </Typography>
+                                    )}
+                                    {(task.startTime || task.endTime) && (
+                                      <Typography variant="caption" color="text.secondary">
+                                        זמן: {task.startTime || "--"} - {task.endTime || "--"}
+                                      </Typography>
+                                    )}
+                                    {task.notes && (
+                                      <Typography variant="caption" color="text.secondary" sx={{ fontStyle: "italic" }}>
+                                        {task.notes}
+                                      </Typography>
+                                    )}
+                                  </Paper>
+                                ))}
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Paper>
                       ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+                    </Box>
+                  </Collapse>
+                </Paper>
+              );
+            })}
+          </Box>
+        )}
+      </Paper>
+    </Box>
   );
 };
 
