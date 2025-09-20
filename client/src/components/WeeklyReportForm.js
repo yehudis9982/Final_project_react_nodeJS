@@ -263,6 +263,37 @@ const WeeklyReportForm = () => {
       const newStatus = res?.data?.status ?? payload.status;
       setStatus(newStatus);
       setMessage(finalize ? "הדוח נשלח בהצלחה." : "הדוח נשמר בהצלחה.");
+      
+      // חזרה לדף המתאים רק אחרי שליחה סופית
+      if (finalize) {
+        setTimeout(() => {
+          // בדיקה אם הגיע מדף הדוחות השבועיים
+          const fromWeeklyReports = sessionStorage.getItem('fromWeeklyReports');
+          
+          if (fromWeeklyReports === 'true') {
+            sessionStorage.removeItem('fromWeeklyReports');
+            window.location.href = "/weekly-reports";
+          } else {
+            // חזרה לדף הבית
+            try {
+              const currentToken = localStorage.getItem("token");
+              if (currentToken) {
+                const decoded = JSON.parse(atob(currentToken.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/consultant-dashboard";
+                }
+              } else {
+                window.location.href = "/";
+              }
+            } catch (navError) {
+              console.error("Navigation error:", navError);
+              window.location.href = "/consultant-dashboard";
+            }
+          }
+        }, 1500);
+      }
     } catch (err) {
       const msg = extractErrMsg(err);
       if (err?.response?.status === 404) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../api/axios';
-import { Paper, Typography, Box, List, ListItem, Chip } from '@mui/material';
+import { Paper, Typography, Box, List, ListItem, Chip, Button } from '@mui/material';
 import "../css/SupervisorNotes.css";
 
 function SupervisorNotes() {
@@ -29,9 +29,31 @@ function SupervisorNotes() {
   return (
     <Box className="supervisor-notes-container">
       <Paper elevation={3} className="supervisor-notes-paper">
-        <Typography variant="h5" align="center" gutterBottom>
-          הערות מהמפקחת
-        </Typography>
+        <Box className="supervisor-notes-header">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/consultant-dashboard";
+                }
+              } else {
+                window.location.href = "/";
+              }
+            }}
+            className="home-btn"
+          >
+            ← דף הבית
+          </Button>
+          <Typography variant="h5" align="center" sx={{ flex: 1 }}>
+            הערות מהמפקחת
+          </Typography>
+        </Box>
         {notes.length === 0 ? (
           <Typography align="center" color="text.secondary">אין הערות</Typography>
         ) : (

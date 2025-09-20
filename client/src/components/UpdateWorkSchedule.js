@@ -71,6 +71,26 @@ const UpdateWorkSchedule = () => {
       );
 
       alert("לוח העבודה נשמר בהצלחה");
+      
+      // חזרה לדף הבית אחרי שמירה מוצלחת
+      setTimeout(() => {
+        try {
+          const currentToken = localStorage.getItem("token");
+          if (currentToken) {
+            const decoded = JSON.parse(atob(currentToken.split('.')[1]));
+            if (decoded?.roles === "Supervisor") {
+              window.location.href = "/supervisor-dashboard";
+            } else {
+              window.location.href = "/consultant-dashboard";
+            }
+          } else {
+            window.location.href = "/";
+          }
+        } catch (navError) {
+          console.error("Navigation error:", navError);
+          window.location.href = "/consultant-dashboard";
+        }
+      }, 1000);
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const msg =
@@ -88,9 +108,31 @@ const UpdateWorkSchedule = () => {
   return (
     <Box className="update-work-schedule-container">
       <Paper elevation={3} className="update-work-schedule-paper">
-        <Typography variant="h5" align="center" gutterBottom>
-          עדכון לוח עבודה
-        </Typography>
+        <Box className="update-work-schedule-header">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/consultant-dashboard";
+                }
+              } else {
+                window.location.href = "/";
+              }
+            }}
+            className="home-btn"
+          >
+            ← דף הבית
+          </Button>
+          <Typography variant="h5" align="center" sx={{ flex: 1 }}>
+            עדכון לוח עבודה
+          </Typography>
+        </Box>
         <form onSubmit={handleSubmit}>
           {days.map((day, index) => (
             <Box key={index} className="work-day-row">

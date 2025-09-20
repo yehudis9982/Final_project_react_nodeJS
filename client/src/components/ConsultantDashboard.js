@@ -3,6 +3,18 @@ import { Paper, Typography, Box, List, ListItem, ListItemButton } from "@mui/mat
 import "../css/ConsultantDashboard.css";
 
 const ConsultantDashboard = ({ consultant }) => {
+  // אם אין consultant כ-prop, ננסה לקרוא מ-localStorage
+  if (!consultant) {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        consultant = decoded;
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  }
   return (
     <Box className="dashboard-container">
       <Paper elevation={3} className="dashboard-paper">

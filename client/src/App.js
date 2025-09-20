@@ -18,13 +18,25 @@ import SupervisorWeeklyReports from './components/SuperviserReport';
 import SupervisorNotes from './components/SupervisorNotes';
 import ConsultantDashboard from './components/ConsultantDashboard';
 function App() {
-  // דוגמה לסטייט של consultant
-  const [consultant, setConsultant] = useState({ name: "מפקחת" });
+  // טעינת נתוני היועצת מהטוקן
+  const [consultant, setConsultant] = useState(() => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        return decoded;
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+    return null;
+  });
 
-  // דוגמה לפונקציית יציאה
+  // פונקציית יציאה
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setConsultant(null);
-    // אפשר להוסיף פעולות נוספות כאן
   };
   return (
     <BrowserRouter>
@@ -45,7 +57,7 @@ function App() {
         <Route path="/UpdateWorkSchdule" element={<UpdateWorkSchedule/>  } />
         <Route path="/reports" element={<SupervisorWeeklyReports/>  } />
         <Route path="/supervisor-notes" element={<SupervisorNotes />} />
-        <Route path="/consultant-dashboard" element={<ConsultantDashboard />} />
+        <Route path="/consultant-dashboard" element={<ConsultantDashboard consultant={consultant} />} />
 
 
       </Routes>

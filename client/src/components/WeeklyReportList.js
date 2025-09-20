@@ -128,7 +128,10 @@ const WeeklyReportList = () => {
                         variant="contained"
                         color="primary"
                         size="small"
-                        onClick={() => navigate(`/weekly-reports/edit/${report._id}`)}
+                        onClick={() => {
+                          sessionStorage.setItem('fromWeeklyReports', 'true');
+                          navigate(`/weekly-reports/edit/${report._id}`);
+                        }}
                       >
                         ערוך
                       </Button>
