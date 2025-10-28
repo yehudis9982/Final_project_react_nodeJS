@@ -42,8 +42,9 @@ const AuthForm = ({ onAuth }) => {
     <Box className="auth-container">
       <Paper elevation={3} className="auth-paper">
         <Typography variant="h5" align="center" gutterBottom>
-          {isLogin ? 'כניסה ליועצת' : 'הרשמה ליועצת חדשה'}
+          {isLogin ? 'התחברות' : 'הרשמה'}
         </Typography>
+        
         <form onSubmit={handleSubmit} className="auth-form">
           {!isLogin && (
             <>
@@ -82,6 +83,14 @@ const AuthForm = ({ onAuth }) => {
             </>
           )}
           <TextField
+            label="תעודת זהות"
+            value={tz}
+            onChange={e => setTz(e.target.value)}
+            required
+            fullWidth
+            margin="normal"
+          />
+          <TextField
             label="סיסמה"
             type="password"
             value={password}
@@ -90,39 +99,32 @@ const AuthForm = ({ onAuth }) => {
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="תעודת זהות"
-            value={tz}
-            onChange={e => setTz(e.target.value)}
-            required
-            fullWidth
-            margin="normal"
-          />
-          <Button
+          
+          <Button 
             type="submit"
             variant="contained"
             color="primary"
             fullWidth
-            className="auth-btn"
           >
-            {isLogin ? 'כניסה' : 'הרשמה'}
+            {isLogin ? 'התחברות' : 'הרשמה'}
           </Button>
+          
+          <Button
+            onClick={() => setIsLogin(!isLogin)}
+            color="secondary"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            {isLogin ? 'אין לך משתמש? להרשמה' : 'יש לך משתמש? להתחברות'}
+          </Button>
+
+          {error && (
+            <Typography color="error" align="center" sx={{ mt: 2 }}>
+              {error}
+            </Typography>
+          )}
         </form>
-        <Button
-          onClick={() => setIsLogin(!isLogin)}
-          color="secondary"
-          fullWidth
-          className="switch-btn"
-        >
-          {isLogin ? 'אין לך משתמש? להרשמה' : 'יש לך משתמש? לכניסה'}
-        </Button>
-        {error && <Typography color="error" align="center" sx={{ mt: 2 }}>{error}</Typography>}
       </Paper>
-      <footer className="auth-footer">
-        <Typography variant="body2" align="center">
-          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
-        </Typography>
-      </footer>
     </Box>
   );
 };

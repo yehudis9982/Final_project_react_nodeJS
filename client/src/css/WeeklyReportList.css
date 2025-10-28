@@ -1,37 +1,43 @@
 .weekly-report-list-container {
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background-color: #f8f6f1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   padding: 24px 16px;
 }
 
 .weekly-report-list-paper {
   padding: 32px 24px;
-  border-radius: 16px;
-  max-width: 900px;
+  border-radius: 8px;
+  max-width: 1200px;
   width: 100%;
-  box-shadow: 0 8px 24px rgba(63, 81, 181, 0.1);
-  margin-bottom: 32px;
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
+  margin: 20px auto;
   background: #fff;
+  border: 1px solid #e5e8e8;
 }
 
 .weekly-report-list-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
+  margin: -32px -24px 24px -24px;
+  background: #34495e;
+  padding: 20px 24px;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 3px solid #2c3e50;
 }
 
 .weekly-report-list-header h4 {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 600;
-  color: #3f51b5;
+  font-family: 'Frank Ruhl Libre', serif;
+  font-weight: 700;
+  color: #ecf0f1;
   letter-spacing: 0.5px;
   text-align: center;
   flex-grow: 1;
+  font-size: 24px;
+  margin: 0;
 }
 
 .home-btn {
@@ -62,35 +68,38 @@
 }
 
 .weekly-report-list-item {
-  margin-bottom: 24px;
+  margin-bottom: 30px;
   padding: 0;
-  border-radius: 12px;
-  background: #f9fafc;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid #bdc3c7;
 }
 
 .weekly-report-list-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+  border-right: 4px solid #2c3e50;
 }
 
 .weekly-report-list-item-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  border-bottom: 1px solid #e3f2fd;
-  background: #e8eaf6;
+  padding: 20px 24px;
+  border-bottom: 2px solid #bdc3c7;
+  background: #34495e;
 }
 
 .weekly-report-list-item-header h6 {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Frank Ruhl Libre', serif;
   font-weight: 600;
-  color: #3f51b5;
+  color: #ecf0f1;
   letter-spacing: 0.5px;
   margin: 0;
+  font-size: 20px;
 }
 
 .weekly-report-list-details {
@@ -98,21 +107,23 @@
 }
 
 .weekly-report-list-day {
-  margin-bottom: 16px;
-  padding: 16px;
-  border-radius: 8px;
-  background: #f3f4f6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 6px;
+  background: #f8f6f1;
+  box-shadow: 0 2px 6px rgba(44, 62, 80, 0.05);
+  border: 1px solid #bdc3c7;
 }
 
 .weekly-report-list-day h6 {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Frank Ruhl Libre', serif;
   font-weight: 600;
-  color: #3f51b5;
+  color: #2c3e50;
   letter-spacing: 0.5px;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e3f2fd;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #bdc3c7;
+  font-size: 18px;
 }
 
 .weekly-report-list-kindergarten,
