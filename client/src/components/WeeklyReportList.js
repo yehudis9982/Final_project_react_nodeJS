@@ -58,31 +58,30 @@ const WeeklyReportList = () => {
   return (
     <Box className="weekly-report-list-container">
       <Paper elevation={3} className="weekly-report-list-paper">
-        <Box className="weekly-report-list-header">
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              const token = localStorage.getItem("token");
-              if (token) {
-                const decoded = JSON.parse(atob(token.split('.')[1]));
-                if (decoded?.roles === "Supervisor") {
-                  window.location.href = "/supervisor-dashboard";
-                } else {
-                  window.location.href = "/consultant-dashboard";
-                }
+        <Button
+          className="home-btn"
+          variant="contained"
+          onClick={() => {
+            const token = localStorage.getItem("token");
+            if (token) {
+              const decoded = JSON.parse(atob(token.split('.')[1]));
+              if (decoded?.roles === "Supervisor") {
+                window.location.href = "/supervisor-dashboard";
               } else {
-                window.location.href = "/";
+                window.location.href = "/consultant-dashboard";
               }
-            }}
-            className="home-btn"
-          >
-            ← דף הבית
-          </Button>
-          <Typography variant="h5" align="center" sx={{ flex: 1 }}>
+            } else {
+              window.location.href = "/";
+            }
+          }}
+        >
+          ← דף הבית
+        </Button>
+        <div className="weekly-report-list-header">
+          <Typography component="h4">
             הדוחות השבועיים שלי
           </Typography>
-        </Box>
+        </div>
         {reports.length === 0 ? (
           <Box className="weekly-report-list-empty">
             <Typography align="center" color="text.secondary">
@@ -105,29 +104,27 @@ const WeeklyReportList = () => {
 
               return (
                 <Paper key={report._id} elevation={1} className="weekly-report-list-item">
-                  <Box className="weekly-report-list-item-header">
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Typography fontWeight="bold">
-                        שבוע {new Date(report.weekStartDate).toLocaleDateString('he-IL')}
-                      </Typography>
-                      {getStatusChip(report.status)}
-                      <Typography variant="body2" color="text.secondary">
-                        {totalHours ? `סה"כ ${totalHours} שעות` : 'אין שעות מדווחות'} • {(report.dailyWork || []).length} ימים
-                      </Typography>
-                    </Box>
-                    <Box display="flex" gap={1}>
+                  <div className="left-content">
+                    <Typography fontWeight="bold">
+                      שבוע {new Date(report.weekStartDate).toLocaleDateString('he-IL')}
+                    </Typography>
+                    {getStatusChip(report.status)}
+                  </div>
+                  <div className="right-content">
+                    <Typography variant="body2" className="reported-hours">
+                      {totalHours ? `סה"כ ${totalHours} שעות` : 'אין שעות מדווחות'} • {(report.dailyWork || []).length} ימים
+                    </Typography>
+                    <div className="weekly-report-list-actions">
                       <Button
+                        className="show-details-btn"
                         variant="outlined"
-                        color="info"
-                        size="small"
                         onClick={() => toggleExpand(report._id)}
                       >
                         {isExpanded ? "הסתר" : "הצג פרטים"}
                       </Button>
                       <Button
+                        className="edit-btn"
                         variant="contained"
-                        color="primary"
-                        size="small"
                         onClick={() => {
                           sessionStorage.setItem('fromWeeklyReports', 'true');
                           navigate(`/weekly-reports/edit/${report._id}`);
@@ -135,8 +132,8 @@ const WeeklyReportList = () => {
                       >
                         ערוך
                       </Button>
-                    </Box>
-                  </Box>
+                    </div>
+                  </div>
                   {report.generalNotes && (
                     <Typography variant="body2" color="primary" sx={{ mt: 1, mb: 1 }}>
                       <b>הערות כלליות:</b> {report.generalNotes}

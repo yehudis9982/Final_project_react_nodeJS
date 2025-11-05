@@ -1,21 +1,51 @@
 .task-container {
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background: linear-gradient(135deg, #f6f9fc 0%, #edf1f7 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 24px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.task-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: linear-gradient(135deg, #2a6dd9 0%, #764ba2 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 60%, 0% 100%);
+  opacity: 0.1;
 }
 
 .task-paper {
-  padding: 32px 24px;
-  border-radius: 16px;
-  max-width: 420px;
+  padding: 40px;
+  border-radius: 24px;
+  max-width: 480px;
   width: 100%;
-  box-shadow: 0 8px 24px rgba(63, 81, 181, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   margin-bottom: 32px;
-  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 1;
+  animation: slideIn 0.6s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .task-header {
@@ -41,28 +71,73 @@
 }
 
 .task-form {
-  margin-top: 8px;
-  background-color: #f9fafc;
-  padding: 16px;
-  border-radius: 8px;
+  margin-top: 20px;
+  background: rgba(249, 250, 252, 0.7);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .task-form .MuiTextField-root {
-  margin-bottom: 16px !important;
+  margin-bottom: 20px !important;
+  width: 100%;
 }
 
 .task-form .MuiInputBase-root {
-  background-color: white;
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.task-form .MuiInputBase-root:hover {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.task-form .MuiInputBase-root.Mui-focused {
+  box-shadow: 0 0 0 2px rgba(42, 109, 217, 0.2);
+}
+
+.task-form .MuiInputLabel-root {
+  color: #666;
+  font-weight: 500;
+}
+
+.task-form .MuiInputLabel-root.Mui-focused {
+  color: #2a6dd9;
 }
 
 .task-btn {
-  margin-top: 24px !important;
-  font-weight: bold;
-  letter-spacing: 1px;
-  background-color: #3f51b5 !important;
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2) !important;
-  padding: 10px 24px !important;
+  margin-top: 30px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  background: linear-gradient(45deg, #2a6dd9, #764ba2) !important;
+  box-shadow: 0 8px 16px rgba(42, 109, 217, 0.2) !important;
+  padding: 12px 32px !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.task-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 20px rgba(42, 109, 217, 0.3) !important;
+}
+
+.task-btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: -100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+}
+
+.task-btn:hover::after {
+  left: 100%;
 }
 
 .task-footer {
