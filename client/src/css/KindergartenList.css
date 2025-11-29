@@ -1,39 +1,142 @@
 .kindergarten-container {
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background: linear-gradient(135deg, #f8f9fc 0%, #edf1f7 100%);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 24px 16px;
+  padding: 32px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.kindergarten-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(135deg, #2a6dd9 0%, #764ba2 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 0% 100%);
+  opacity: 0.1;
+  z-index: 0;
 }
 
 .kindergarten-paper {
-  padding: 32px 24px;
-  border-radius: 16px;
-  max-width: 500px;
+  padding: 40px;
+  border-radius: 24px;
+  max-width: 600px;
   width: 100%;
-  box-shadow: 0 8px 24px rgba(63, 81, 181, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   margin-bottom: 32px;
-  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.6s ease-out;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kindergarten-paper {
+  position: relative;
+}
+
+.kindergarten-paper::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  height: 120px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: -1;
 }
 
 .kindergarten-paper h5 {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 600;
-  color: #3f51b5;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  font-size: 2rem;
+  color: white;
+  letter-spacing: 1px;
   text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #e3f2fd;
+  margin: -20px -20px 30px -20px;
+  padding: var(--spacing-lg);
+  background: var(--gradient-primary);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.kindergarten-paper h5::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: titleShine 3s infinite;
+}
+
+@keyframes titleShine {
+  from {
+    transform: translateX(-200%);
+  }
+  to {
+    transform: translateX(200%);
+  }
 }
 
 .add-btn {
-  margin-bottom: 16px !important;
-  background-color: #3f51b5 !important;
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2) !important;
-  padding: 8px 24px !important;
+  margin-bottom: 24px !important;
+  background: linear-gradient(45deg, #2a6dd9, #764ba2) !important;
+  box-shadow: 0 8px 16px rgba(42, 109, 217, 0.2) !important;
+  padding: 12px 32px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 20px rgba(42, 109, 217, 0.3) !important;
+}
+
+.add-btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: -100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+}
+
+.add-btn:hover::after {
+  left: 100%;
+}
+
+.add-btn .MuiSvgIcon-root {
+  margin-right: 8px;
+  font-size: 1.2rem;
 }
 
 .kindergarten-form {
@@ -53,18 +156,48 @@
 .kindergarten-list-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid #e0e4e8;
-  padding: 12px 8px !important;
-  margin-bottom: 8px;
-  border-radius: 4px;
-  background-color: white;
-  transition: all 0.2s ease;
+  gap: 16px;
+  border: 1px solid rgba(224, 228, 232, 0.5);
+  padding: 20px !important;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kindergarten-list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #2a6dd9, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .kindergarten-list-item:hover {
-  background-color: #f5f7fa;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.kindergarten-list-item:hover::before {
+  opacity: 1;
+}
+
+.kindergarten-list-item .MuiListItemText-primary {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.kindergarten-list-item .MuiListItemText-secondary {
+  color: #6c757d;
+  font-size: 0.9rem;
 }
 
 .kindergarten-footer {

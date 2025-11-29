@@ -1,60 +1,158 @@
 .dashboard-container {
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background: linear-gradient(135deg, #f6f9fc 0%, #f0f2f5 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 24px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(135deg, #2a6dd9 0%, #764ba2 100%);
+  transform: skewY(-6deg);
+  transform-origin: top left;
 }
 
 .dashboard-paper {
   padding: 32px 24px;
-  border-radius: 16px;
+  border-radius: 24px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 8px 24px rgba(63, 81, 181, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   margin-bottom: 32px;
-  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dashboard-paper h5 {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-weight: 600;
-  color: #3f51b5;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #1a237e;
+  letter-spacing: 1px;
   text-align: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #e3f2fd;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  position: relative;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  border-bottom: 3px solid #1a237e;
+}
+
+.dashboard-paper h5::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 3px;
+  background: var(--gradient-accent);
+  border-radius: var(--radius-sm);
+  animation: shimmerLine 2s infinite;
+}
+
+@keyframes shimmerLine {
+  0% {
+    transform: translateX(-10px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(10px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-10px);
+    opacity: 0.5;
+  }
 }
 
 .dashboard-list {
-  margin-top: 24px;
-  background-color: #f9fafc;
-  border-radius: 8px;
-  padding: 12px !important;
+  margin-top: 32px;
+  background-color: transparent;
+  border-radius: 16px;
+  padding: 0 !important;
+  display: grid;
+  gap: 16px;
 }
 
 .dashboard-list li {
-  margin-bottom: 12px;
+  margin: 0;
+  transform-origin: center;
+  transition: transform 0.3s ease;
 }
 
-.dashboard-list li:last-child {
-  margin-bottom: 0;
+.dashboard-list li:hover {
+  transform: scale(1.02);
 }
 
 .dashboard-list button {
-  padding: 12px !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  font-weight: 500 !important;
-  transition: all 0.2s ease !important;
+  width: 100%;
+  padding: 20px !important;
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  border: 2px solid #e0e0e0 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  color: #333 !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-list button::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 5px;
+  background: #1a237e;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .dashboard-list button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  transform: translateX(5px);
+  border-color: #1a237e !important;
+  background: linear-gradient(to right, rgba(26, 35, 126, 0.05), transparent) !important;
+}
+
+.dashboard-list button:hover::before {
+  opacity: 1;
+}
+
+.dashboard-list button .MuiSvgIcon-root {
+  margin-right: 12px;
+  font-size: 1.5rem;
+  color: #1a237e;
 }
 
 .dashboard-logout-btn {

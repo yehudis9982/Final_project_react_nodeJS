@@ -1,57 +1,98 @@
 .weekly-report-list-container {
   min-height: 100vh;
-  background-color: #f8f6f1;
+  background: rgb(243, 242, 247);
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   padding: 24px 16px;
+  position: relative;
+}
+
+.weekly-report-list-container::before {
+  display: none;
 }
 
 .weekly-report-list-paper {
   padding: 32px 24px;
-  border-radius: 8px;
+  border-radius: 16px;
   max-width: 1200px;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
-  margin: 20px auto;
-  background: #fff;
-  border: 1px solid #e5e8e8;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .weekly-report-list-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin: -32px -24px 24px -24px;
-  background: #34495e;
-  padding: 20px 24px;
-  border-radius: 8px 8px 0 0;
-  border-bottom: 3px solid #2c3e50;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin: 0 24px 20px;
+  padding: 16px 24px;
+  border-radius: var(--radius-lg);
+  position: relative;
+  width: calc(100% - 48px);
 }
 
 .weekly-report-list-header h4 {
   font-family: 'Frank Ruhl Libre', serif;
-  font-weight: 700;
-  color: #ecf0f1;
-  letter-spacing: 0.5px;
-  text-align: center;
-  flex-grow: 1;
-  font-size: 24px;
+  font-weight: 800;
+  font-size: 2.5rem;
+  color: #1a237e;
+  letter-spacing: 2px;
   margin: 0;
+  position: relative;
+  padding-left: 24px;
+  border-left: 6px solid #1a237e;
+  line-height: 1.4;
+  text-align: right;
+  width: 100%;
+}
+
+@keyframes shimmerHeader {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .home-btn {
-  min-width: 100px;
-  background-color: #3f51b5 !important;
+  min-width: 120px !important;
+  background: linear-gradient(45deg, #2a6dd9, #764ba2) !important;
   color: white !important;
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2) !important;
-  transition: all 0.2s ease !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(42, 109, 217, 0.2) !important;
+  transition: all 0.3s ease !important;
+  margin-bottom: 16px !important;
 }
 
 .home-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(63, 81, 181, 0.3) !important;
-  background-color: #303f9f !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(42, 109, 217, 0.3) !important;
+  background: linear-gradient(45deg, #2463c7, #6a44a0) !important;
 }
 
 .weekly-report-list-empty {
@@ -65,74 +106,220 @@
 
 .weekly-report-list-items {
   margin-top: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 24px;
 }
 
 .weekly-report-list-item {
-  margin-bottom: 30px;
-  padding: 0;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.1);
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 2px solid #e0e0e0;
+  padding: 20px !important;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background-color: #ffffff;
   transition: all 0.3s ease;
-  border: 1px solid #bdc3c7;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.weekly-report-list-item .left-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.weekly-report-list-item .right-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.weekly-report-list-item .reported-hours {
+  font-size: 0.9rem;
+  color: #666;
+  margin-right: 16px;
+}
+
+.weekly-report-list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(45deg, #2a6dd9, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .weekly-report-list-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
-  border-right: 4px solid #2c3e50;
+  border-color: #2a6dd9;
+  transform: translateX(5px);
+  box-shadow: 0 10px 20px rgba(42, 109, 217, 0.1);
+}
+
+.weekly-report-list-item:hover::before {
+  opacity: 1;
 }
 
 .weekly-report-list-item-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 2px solid #bdc3c7;
-  background: #34495e;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--gradient-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.weekly-report-list-item-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent 50%);
+  animation: shimmer 2s infinite;
 }
 
 .weekly-report-list-item-header h6 {
-  font-family: 'Frank Ruhl Libre', serif;
+  font-family: 'Segoe UI', 'Frank Ruhl Libre', serif;
   font-weight: 600;
-  color: #ecf0f1;
-  letter-spacing: 0.5px;
+  color: white;
+  letter-spacing: 1px;
   margin: 0;
-  font-size: 20px;
+  font-size: 1.25rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .weekly-report-list-details {
   padding: 24px;
 }
 
+.weekly-report-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weekly-report-list-actions button {
+  min-width: 100px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.weekly-report-list-actions .show-details-btn {
+  background-color: #fff !important;
+  color: #1a237e !important;
+  border: 1px solid #1a237e !important;
+}
+
+.weekly-report-list-actions .edit-btn {
+  background: linear-gradient(45deg, #2a6dd9, #764ba2) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(42, 109, 217, 0.2) !important;
+}
+
+.weekly-report-list-actions button:hover {
+  transform: translateY(-2px);
+}
+
 .weekly-report-list-day {
-  margin-bottom: 20px;
-  padding: 20px;
-  border-radius: 6px;
-  background: #f8f6f1;
-  box-shadow: 0 2px 6px rgba(44, 62, 80, 0.05);
-  border: 1px solid #bdc3c7;
+  margin-bottom: 24px;
+  padding: 24px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ffffff, #f8f6f1);
+  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.08);
+  border: 1px solid rgba(189, 195, 199, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weekly-report-list-day:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.12);
 }
 
 .weekly-report-list-day h6 {
   font-family: 'Frank Ruhl Libre', serif;
   font-weight: 600;
   color: #2c3e50;
-  letter-spacing: 0.5px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #bdc3c7;
-  font-size: 18px;
+  letter-spacing: 0.8px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(189, 195, 199, 0.5);
+  font-size: 20px;
+  position: relative;
+}
+
+.weekly-report-list-day h6::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #3498db, #2980b9);
 }
 
 .weekly-report-list-kindergarten,
 .weekly-report-list-task {
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #f9fafb;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(189, 195, 199, 0.2);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.weekly-report-list-kindergarten:hover,
+.weekly-report-list-task:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateX(4px);
+  border-color: rgba(52, 152, 219, 0.3);
+}
+
+.weekly-report-list-kindergarten::before,
+.weekly-report-list-task::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: linear-gradient(to bottom, #3498db, #2980b9);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.weekly-report-list-kindergarten:hover::before,
+.weekly-report-list-task:hover::before {
+  opacity: 1;
 }
 
 .weekly-report-list-loading {
@@ -149,4 +336,63 @@
   color: #d32f2f;
   background: rgba(244, 67, 54, 0.05);
   border-radius: 8px;
+}
+
+/* עיצובים חדשים */
+.weekly-report-list-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  border: 2px solid #e0e0e0 !important;
+  padding: 20px !important;
+  border-radius: 16px !important;
+  background-color: #ffffff !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: visible !important;
+  width: 100% !important;
+  margin-bottom: 8px !important;
+}
+
+.weekly-report-list-item .left-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.weekly-report-list-item .right-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-right: auto;
+}
+
+.weekly-report-list-item .reported-hours {
+  color: #666;
+  margin-right: 16px;
+}
+
+.weekly-report-list-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.weekly-report-list-actions .show-details-btn {
+  background-color: white !important;
+  color: #1a237e !important;
+  border: 1px solid #1a237e !important;
+  min-width: 100px;
+}
+
+.weekly-report-list-actions .edit-btn {
+  background: linear-gradient(45deg, #2a6dd9, #764ba2) !important;
+  color: white !important;
+  border: none !important;
+  min-width: 80px;
+  box-shadow: 0 2px 8px rgba(42, 109, 217, 0.2) !important;
+}
+
+.weekly-report-list-actions button:hover {
+  transform: translateY(-2px);
 }
