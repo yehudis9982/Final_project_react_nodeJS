@@ -132,6 +132,7 @@
 .consultant-list-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
 .consultant-list-actions button {
@@ -141,6 +142,16 @@
 
 .consultant-list-actions button:hover {
   background-color: rgba(63, 81, 181, 0.1) !important;
+}
+
+.consultant-list-actions .MuiIconButton-root {
+  padding: 8px;
+  transition: all 0.3s ease;
+}
+
+.consultant-list-actions .MuiIconButton-root:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+  transform: scale(1.1);
 }
 
 .consultant-list-footer {

@@ -44,6 +44,7 @@ router.delete(
 router.get("/", ConsultantController.getAllConsultant);
 router.get("/:_id", validateObjectIdParam("_id"), ConsultantController.getConsultantByID);
 router.put("/work-schedule", ConsultantController.updateWorkSchedule);
+router.put("/:_id/work-schedule", validateObjectIdParam("_id"), ConsultantController.updateConsultantWorkSchedule);
 router.put("/:_id", validateObjectIdParam("_id"), ConsultantController.updateConsultant);
 router.put("/my-kindergartens", ConsultantController.updateConsultantKindergartens);
 router.delete("/:_id", validateObjectIdParam("_id"), ConsultantController.deleteConsultant);

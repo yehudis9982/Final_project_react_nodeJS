@@ -41,10 +41,7 @@ const ConsultantDashboard = ({ consultant }) => {
                 <ListItemButton component="a" href="/kindergartens">רשימת הגנים שלי</ListItemButton>
               </ListItem>
               <ListItem>
-                <ListItemButton component="a" href="/weekly-reports/new">דוח שבועי חדש</ListItemButton>
-              </ListItem>
-              <ListItem>
-                <ListItemButton component="a" href="/UpdateWorkSchdule">עדכון מערכת השעות</ListItemButton>
+                <ListItemButton component="a" href="/view-work-schedule">מערכת השעות שלי</ListItemButton>
               </ListItem>
               <ListItem>
                 <ListItemButton component="a" href="/supervisor-notes">הערות מפקחת</ListItemButton>

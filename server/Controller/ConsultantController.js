@@ -143,6 +143,71 @@ const updateWorkSchedule = async (req, res) => {
     return res.status(400).json({ message: msg });
   }
 };
+
+// עדכון מערכת שעות ליועצת ספציפית (מפקחת בלבד)
+const updateConsultantWorkSchedule = async (req, res) => {
+  try {
+    // ודא שהמשתמש הוא מפקחת
+    if (req.consultant?.roles !== "Supervisor") {
+      return res.status(403).json({ message: "Only Supervisor can update work schedule for other consultants" });
+    }
+
+    const { _id } = req.params; // מזהה היועצת
+    const { workSchedule } = req.body || {};
+
+    if (!mongoose.isValidObjectId(_id)) {
+      return res.status(400).json({ message: "invalid consultant id" });
+    }
+
+    if (!Array.isArray(workSchedule)) {
+      return res.status(400).json({ message: "workSchedule חייב להיות מערך" });
+    }
+
+    const seen = new Set();
+    const normalized = workSchedule
+      .map((item) => {
+        const dayOfWeek = Number(item.dayOfWeek);
+        const isWorkDay = Boolean(item.isWorkDay);
+
+        if (!Number.isInteger(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
+          throw new Error("dayOfWeek חייב להיות בין 0 ל-6");
+        }
+        if (seen.has(dayOfWeek)) {
+          throw new Error(`dayOfWeek מוכפל: ${dayOfWeek}`);
+        }
+        seen.add(dayOfWeek);
+
+        let startHour = item.startHour ?? null;
+        let endHour = item.endHour ?? null;
+
+        if (isWorkDay) {
+          if (!isValidTime(startHour)) throw new Error(`startHour לא תקין ליום ${dayOfWeek}`);
+          if (!isValidTime(endHour)) throw new Error(`endHour לא תקין ליום ${dayOfWeek}`);
+          if (toMinutes(endHour) <= toMinutes(startHour)) {
+            throw new Error(`endHour חייב להיות גדול מ-startHour ליום ${dayOfWeek}`);
+          }
+        } else {
+          startHour = null;
+          endHour = null;
+        }
+
+        return { dayOfWeek, startHour, endHour, isWorkDay };
+      })
+      .sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+
+    const consultant = await Consultant.findById(_id).select("_id workSchedule");
+    if (!consultant) return res.status(404).json({ message: "יועצת לא נמצאה" });
+
+    consultant.workSchedule = normalized;
+    await consultant.save();
+
+    return res.status(200).json({ workSchedule: consultant.workSchedule });
+  } catch (err) {
+    console.error("updateConsultantWorkSchedule error:", err);
+    const msg = err?.message || "שגיאת שרת";
+    return res.status(400).json({ message: msg });
+  }
+};
 // עדכון רשימת הגנים ליועצת
 const updateConsultantKindergartens = async (req, res) => {
   try {
@@ -327,6 +392,7 @@ module.exports = {
   updateConsultant,
   deleteConsultant,
   updateWorkSchedule ,
+  updateConsultantWorkSchedule,
   updateConsultantKindergartens,
   getMe,
   addSupervisorNote,

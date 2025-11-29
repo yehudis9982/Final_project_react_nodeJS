@@ -1,0 +1,63 @@
+.view-work-schedule-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  direction: rtl;
+}
+
+.view-work-schedule-paper {
+  width: 100%;
+  max-width: 800px;
+  padding: 30px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.view-work-schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.home-btn {
+  margin-left: 10px;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-weight: bold;
+}
+
+.view-work-schedule-footer {
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+}
+
+/* טבלה */
+.MuiTableContainer-root {
+  margin-top: 20px;
+}
+
+.MuiTableCell-root {
+  padding: 16px;
+  font-size: 1rem;
+}
+
+.MuiTableHead-root .MuiTableCell-root {
+  background-color: #667eea;
+  color: white;
+  font-weight: bold;
+}
+
+.MuiTableBody-root .MuiTableRow-root:nth-of-type(odd) {
+  background-color: #f5f5f5;
+}
+
+.MuiTableBody-root .MuiTableRow-root:hover {
+  background-color: #e8eaf6;
+}

@@ -14,6 +14,7 @@ import ConsultantForm from './components/ConsultantForm';
 import { useState } from 'react';
 import Header from './components/Header'
 import UpdateWorkSchedule from './components/UpdateWorkSchedule';
+import ViewWorkSchedule from './components/ViewWorkSchedule';
 import SupervisorWeeklyReports from './components/SuperviserReport';
 import SupervisorNotes from './components/SupervisorNotes';
 import ConsultantDashboard from './components/ConsultantDashboard';
@@ -55,6 +56,7 @@ function App() {
         <Route path="/weekly-reports/edit/:reportId" element={<WeeklyReportForm />} />
         <Route path="/consultants/new" element={<ConsultantForm token={localStorage.getItem("token")} />} />
         <Route path="/UpdateWorkSchdule" element={<UpdateWorkSchedule/>  } />
+        <Route path="/view-work-schedule" element={<ViewWorkSchedule/>  } />
         <Route path="/reports" element={<SupervisorWeeklyReports/>  } />
         <Route path="/supervisor-notes" element={<SupervisorNotes />} />
         <Route path="/consultant-dashboard" element={<ConsultantDashboard consultant={consultant} />} />

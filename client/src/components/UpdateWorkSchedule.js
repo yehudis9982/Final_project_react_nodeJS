@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Paper, Typography, Box, Button, FormControlLabel, Checkbox, TextField } from "@mui/material";
 import "../css/UpdateWorkSchedule.css";
 
 const UpdateWorkSchedule = () => {
   const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי"];
   const token = localStorage.getItem("token");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const consultantId = searchParams.get("consultantId"); // מזהה היועצת (אם המפקחת עורכת)
+  const [consultantName, setConsultantName] = useState("");
   const [workSchedule, setWorkSchedule] = useState(
     days.map((_, index) => ({
       dayOfWeek: index,
@@ -14,6 +19,40 @@ const UpdateWorkSchedule = () => {
       isWorkDay: false,
     }))
   );
+
+  // טעינת מערכת השעות הקיימת של היועצת
+  useEffect(() => {
+    const fetchConsultantSchedule = async () => {
+      if (!consultantId) return; // אם אין consultantId, זו יועצת שעורכת לעצמה
+      
+      try {
+        const res = await axios.get(`http://localhost:2025/api/Consultant/${consultantId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        setConsultantName(`${res.data.firstName} ${res.data.lastName}`);
+        
+        if (res.data.workSchedule && res.data.workSchedule.length > 0) {
+          // עדכון מערכת השעות עם הנתונים הקיימים
+          const updatedSchedule = days.map((_, index) => {
+            const existingDay = res.data.workSchedule.find(d => d.dayOfWeek === index);
+            return existingDay || {
+              dayOfWeek: index,
+              startHour: "",
+              endHour: "",
+              isWorkDay: false,
+            };
+          });
+          setWorkSchedule(updatedSchedule);
+        }
+      } catch (err) {
+        console.error("Error fetching consultant schedule:", err);
+        alert("שגיאה בטעינת מערכת השעות של היועצת");
+      }
+    };
+
+    fetchConsultantSchedule();
+  }, [consultantId, token]);
 
   const handleChange = (index, field, value) => {
     const newSchedule = [...workSchedule];
@@ -50,45 +89,48 @@ const UpdateWorkSchedule = () => {
         dayOfWeek: Number(day.dayOfWeek),
       }));
 
+      // אם יש consultantId, עדכן למפקחת, אחרת עדכן ליועצת עצמה
+      const url = consultantId 
+        ? `http://localhost:2025/api/Consultant/${consultantId}/work-schedule`
+        : "http://localhost:2025/api/Consultant/work-schedule";
+
       const res = await axios.put(
-        "http://localhost:2025/api/Consultant/work-schedule",
+        url,
         { workSchedule: payload },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const updatedWorkSchedule = res.data?.workSchedule ?? [];
-      let currentConsultant = {};
-      try {
-        const cStr = localStorage.getItem("consultant");
-        currentConsultant = cStr ? JSON.parse(cStr) : {};
-      } catch (e) {
-        currentConsultant = {};
+      
+      // רק אם היועצת עורכת לעצמה, עדכן את localStorage
+      if (!consultantId) {
+        let currentConsultant = {};
+        try {
+          const cStr = localStorage.getItem("consultant");
+          currentConsultant = cStr ? JSON.parse(cStr) : {};
+        } catch (e) {
+          currentConsultant = {};
+        }
+
+        localStorage.setItem(
+          "consultant",
+          JSON.stringify({ ...currentConsultant, workSchedule: updatedWorkSchedule })
+        );
       }
 
-      localStorage.setItem(
-        "consultant",
-        JSON.stringify({ ...currentConsultant, workSchedule: updatedWorkSchedule })
+      alert(consultantId 
+        ? `מערכת השעות של ${consultantName} עודכנה בהצלחה`
+        : "לוח העבודה נשמר בהצלחה"
       );
-
-      alert("לוח העבודה נשמר בהצלחה");
       
-      // חזרה לדף הבית אחרי שמירה מוצלחת
+      // חזרה לדף המתאים
       setTimeout(() => {
-        try {
-          const currentToken = localStorage.getItem("token");
-          if (currentToken) {
-            const decoded = JSON.parse(atob(currentToken.split('.')[1]));
-            if (decoded?.roles === "Supervisor") {
-              window.location.href = "/supervisor-dashboard";
-            } else {
-              window.location.href = "/consultant-dashboard";
-            }
-          } else {
-            window.location.href = "/";
-          }
-        } catch (navError) {
-          console.error("Navigation error:", navError);
-          window.location.href = "/consultant-dashboard";
+        if (consultantId) {
+          // אם מפקחת עדכנה, חזור לרשימת היועצות
+          navigate("/consultants");
+        } else {
+          // אם יועצת עדכנה לעצמה, חזור לדף הבית שלה
+          navigate("/consultant-dashboard");
         }
       }, 1000);
     } catch (err) {
@@ -113,24 +155,21 @@ const UpdateWorkSchedule = () => {
             variant="contained"
             color="secondary"
             onClick={() => {
-              const token = localStorage.getItem("token");
-              if (token) {
-                const decoded = JSON.parse(atob(token.split('.')[1]));
-                if (decoded?.roles === "Supervisor") {
-                  window.location.href = "/supervisor-dashboard";
-                } else {
-                  window.location.href = "/consultant-dashboard";
-                }
+              if (consultantId) {
+                navigate("/consultants");
               } else {
-                window.location.href = "/";
+                navigate("/consultant-dashboard");
               }
             }}
             className="home-btn"
           >
-            ← דף הבית
+            ← חזור
           </Button>
           <Typography variant="h5" align="center" sx={{ flex: 1 }}>
-            עדכון לוח עבודה
+            {consultantId 
+              ? `עדכון מערכת שעות - ${consultantName}` 
+              : "עדכון לוח עבודה"
+            }
           </Typography>
         </Box>
         <form onSubmit={handleSubmit}>

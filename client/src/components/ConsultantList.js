@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import ConsultantNotesModal from "./ConsultantNotesModal";
-import { Paper, Typography, Box, Button, TextField, List, ListItem, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Paper, Typography, Box, Button, TextField, List, ListItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import "../css/ConsultantList.css";
 import "../css/ConsultantForm.css";
 import "../css/Dialogs.css";
@@ -15,6 +16,8 @@ const ConsultantList = () => {
   const [search, setSearch] = useState("");
   const [openForId, setOpenForId] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [consultantToDelete, setConsultantToDelete] = useState(null);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -72,6 +75,40 @@ const ConsultantList = () => {
     } catch (err) {
       setFormError("שגיאה בהוספת יועצת");
     }
+  };
+
+  const handleDeleteClick = (consultant) => {
+    setConsultantToDelete(consultant);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!consultantToDelete) return;
+    
+    try {
+      await axios.delete(`http://localhost:2025/api/Consultant/${consultantToDelete._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // רענון רשימת היועצות
+      const res = await axios.get("http://localhost:2025/api/Consultant", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setConsultants(res.data || []);
+      
+      // סגירת הדיאלוג
+      setDeleteDialogOpen(false);
+      setConsultantToDelete(null);
+    } catch (err) {
+      alert("שגיאה במחיקת היועצת");
+      setDeleteDialogOpen(false);
+      setConsultantToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setConsultantToDelete(null);
   };
 
   const filtered = consultants.filter((c) =>
@@ -165,6 +202,23 @@ const ConsultantList = () => {
                 >
                   משימות
                 </Button>
+                <Button
+                  variant="outlined"
+                  color="info"
+                  size="small"
+                  onClick={() => navigate(`/UpdateWorkSchdule?consultantId=${c._id}`)}
+                  title="עדכון מערכת שעות ליועצת"
+                >
+                  מערכת שעות
+                </Button>
+                <IconButton
+                  color="error"
+                  size="small"
+                  onClick={() => handleDeleteClick(c)}
+                  title="מחיקת יועצת"
+                >
+                  <DeleteIcon />
+                </IconButton>
               </Box>
             </ListItem>
           ))}
@@ -295,6 +349,39 @@ const ConsultantList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* דיאלוג אישור מחיקה */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          אישור מחיקת יועצת
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            האם את/ה בטוח/ה שברצונך למחוק את היועצת{" "}
+            <strong>
+              {consultantToDelete?.firstName} {consultantToDelete?.lastName}
+            </strong>
+            ?
+          </Typography>
+          <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+            פעולה זו אינה ניתנת לביטול!
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            ביטול
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            מחק
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <footer className="consultant-list-footer">
         <Typography variant="body2" align="center">
           כל הזכויות שמורות &copy; 2025 | מערכת יועצות
