@@ -112,9 +112,16 @@ const WeeklyReportForm = () => {
     const ac = new AbortController();
     const kill = setTimeout(() => ac.abort("template-timeout"), 20000);
     try {
+      // ודא שהתאריך בפורמט ISO עם הזמן המקומי
+      const selectedDate = new Date(weekStartDate + 'T00:00:00');
+      const isoDate = selectedDate.toISOString();
+      
+      console.log("Selected date:", weekStartDate);
+      console.log("ISO date:", isoDate);
+      
       const { data } = await client.post(
         "/WeeklyReport/template",
-        { weekStartDate },
+        { weekStartDate: isoDate },
         { signal: ac.signal }
       );
 
@@ -139,7 +146,7 @@ const WeeklyReportForm = () => {
         setStatus(data?.status || "Draft");
       }
 
-      setMessage("תבנית נוצרה בהצלחה, ניתן לערוך ולשלוח.");
+      setMessage(`תבנית נוצרה בהצלחה! נוצרו ${data?.dailyWork?.length || 0} ימים החל מ-${weekStartDate}`);
     } catch (err) {
       const msg = extractErrMsg(err);
       if (msg === "Weekly report for this week already exists!") {
@@ -317,46 +324,32 @@ const WeeklyReportForm = () => {
             variant="contained"
             color="secondary"
             onClick={() => {
-              const token = localStorage.getItem("token");
-              if (token) {
-                const decoded = JSON.parse(atob(token.split('.')[1]));
-                if (decoded?.roles === "Supervisor") {
-                  window.location.href = "/supervisor-dashboard";
-                } else {
-                  window.location.href = "/consultant-dashboard";
-                }
-              } else {
-                window.location.href = "/";
-              }
+              sessionStorage.removeItem('fromWeeklyReports');
+              window.location.href = "/weekly-reports";
             }}
             className="home-btn"
           >
-            ← דף הבית
+            ← חזרה לדוחות
           </Button>
           <Typography variant="h6" align="center" sx={{ flex: 1 }}>
-            דוח שבועי
+            {currentId ? "מילוי/עריכת דוח שבועי" : "דוח שבועי"}
           </Typography>
         </Box>
 
         {!currentId && (
-          <Box className="weekly-report-form-date-row">
-            <TextField
-              type="date"
-              value={weekStartDate}
-              onChange={(e) => setWeekStartDate(e.target.value)}
-              label="תאריך תחילת שבוע"
-              InputLabelProps={{ shrink: true }}
-              size="small"
-              className="weekly-report-date-input"
-            />
+          <Box sx={{ p: 3, textAlign: "center" }}>
+            <Typography color="warning.main" variant="h6">
+              טוען דוח...
+            </Typography>
+            <Typography color="text.secondary" sx={{ mt: 2 }}>
+              אם הדף לא נטען, חזרו לדף הדוחות ונסו שוב
+            </Typography>
             <Button
               variant="contained"
-              color="primary"
-              onClick={createTemplate}
-              disabled={!token || creating}
-              className="weekly-report-create-btn"
+              onClick={() => window.location.href = "/weekly-reports"}
+              sx={{ mt: 2 }}
             >
-              {creating ? "יוצר..." : "צור תבנית"}
+              חזרה לדוחות
             </Button>
           </Box>
         )}

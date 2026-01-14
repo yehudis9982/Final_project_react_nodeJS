@@ -181,6 +181,8 @@
   background: #1a237e;
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .task-list-item::after {
@@ -193,6 +195,13 @@
   background: linear-gradient(45deg, rgba(26,35,126,0.05), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.task-list-item > * {
+  position: relative;
+  z-index: 1;
 }
 
 .task-list-item:hover {

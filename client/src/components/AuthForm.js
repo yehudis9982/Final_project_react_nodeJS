@@ -34,7 +34,18 @@ const AuthForm = ({ onAuth }) => {
         onAuth(res.data);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'שגיאה');
+      const errorMessage = err.response?.data?.message || '';
+      
+      // הודעות שגיאה ידידותיות למשתמש
+      if (errorMessage.toLowerCase().includes('unauthorized') || err.response?.status === 401) {
+        setError('תעודת זהות או סיסמה שגויים');
+      } else if (errorMessage.includes('ת.ז. חייבת להיות ייחודית')) {
+        setError('תעודת זהות כבר קיימת במערכת');
+      } else if (errorMessage) {
+        setError(errorMessage);
+      } else {
+        setError('שגיאה בהתחברות, נסה שוב');
+      }
     }
   };
 
