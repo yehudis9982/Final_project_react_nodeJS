@@ -15,6 +15,7 @@ app.use("/api/Kindergarten",require("./routes/KindergartenRoute"))
 app.use("/api/Task",require("./routes/TaskRoute"))
 app.use("/api/WeeklyReport",require("./routes/WeeklyReportRoute"))
 app.use("/api/auth",require("./routes/authRoute"))
+app.use("/api/settings",require("./routes/SettingsRoute"))
 mongoose.connection.once("open",()=>{
     console.log("connected to mongoDB")
     app.listen(PORT,()=>{

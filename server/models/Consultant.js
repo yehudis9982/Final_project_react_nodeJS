@@ -1,5 +1,40 @@
 const mongoose=require("mongoose")
 const Task = require('./Task');
+const SupervisorSettingsSchema = new mongoose.Schema({
+  profile: {
+    firstName: { type: String, default: "" },
+    lastName: { type: String, default: "" },
+    email: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    tz: { type: String, default: "" },
+  },
+  notifications: {
+    emailEnabled: { type: Boolean, default: true },
+    systemEnabled: { type: Boolean, default: true },
+    weeklySummary: { type: String, default: "weekly" },
+    quietHoursStart: { type: String, default: "22:00" },
+    quietHoursEnd: { type: String, default: "07:00" },
+    reportMissing: { type: Boolean, default: true },
+    taskOverdue: { type: Boolean, default: true },
+  },
+  rulesTemplates: {
+    defaultReportStatus: { type: String, default: "Draft" },
+    requireDailyNotes: { type: Boolean, default: false },
+    minWeeklyHours: { type: Number, default: 0 },
+    templateName: { type: String, default: "" },
+  },
+  display: {
+    theme: { type: String, default: "light" },
+    density: { type: String, default: "comfortable" },
+    dateFormat: { type: String, default: "DD/MM/YYYY" },
+    showReportsColumn: { type: Boolean, default: true },
+    showTasksColumn: { type: Boolean, default: true },
+    showKindergartensColumn: { type: Boolean, default: true },
+  },
+  logs: {
+    keepDays: { type: Number, default: 30 },
+  },
+}, { _id: false });
 const SupervisorNoteSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: "Consultant", required: true }, // המפקחת
   text: { type: String, required: true, trim: true, maxlength: 2000 },
@@ -70,5 +105,6 @@ roles:{
     default:"Consultant"
 },
 supervisorNotes: [SupervisorNoteSchema],
+supervisorSettings: { type: SupervisorSettingsSchema, default: () => ({}) },
 },{ timestamps:true})
 module.exports=mongoose.model("Consultant",ConsultantSchema)

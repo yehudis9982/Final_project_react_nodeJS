@@ -18,6 +18,7 @@ import ViewWorkSchedule from './components/ViewWorkSchedule';
 import SupervisorWeeklyReports from './components/SuperviserReport';
 import SupervisorNotes from './components/SupervisorNotes';
 import ConsultantDashboard from './components/ConsultantDashboard';
+import SupervisorSettings from './components/SupervisorSettings';
 function App() {
   // טעינת נתוני היועצת מהטוקן
   const [consultant, setConsultant] = useState(() => {
@@ -60,6 +61,7 @@ function App() {
         <Route path="/reports" element={<SupervisorWeeklyReports/>  } />
         <Route path="/supervisor-notes" element={<SupervisorNotes />} />
         <Route path="/consultant-dashboard" element={<ConsultantDashboard consultant={consultant} />} />
+        <Route path="/settings" element={<SupervisorSettings consultant={consultant} />} />
 
 
       </Routes>
