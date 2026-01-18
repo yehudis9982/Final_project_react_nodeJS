@@ -23,8 +23,8 @@ const ConsultantDashboard = ({ consultant }) => {
         ) : (
           <>
             <Typography variant="h4" align="center" gutterBottom>
-              שלום {consultant.name || consultant.firstName}!
-            </Typography>
+          {`\u05e9\u05dc\u05d5\u05dd ${consultant?.name || consultant?.firstName || ""}!`}
+        </Typography>
             {(!consultant?.workSchedule || consultant.workSchedule.length === 0) && (
               <Typography variant="body1" color="warning.main" align="center" gutterBottom>
                 שימי לב עדיין לא הגדרת שעות עבודה, יש לעדכן בהקדם!

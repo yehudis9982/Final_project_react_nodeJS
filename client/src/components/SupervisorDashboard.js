@@ -17,7 +17,7 @@ const SupervisorDashboard = ({ consultant, onLogout }) => {
     <Box className="supervisor-dashboard-container">
       <Paper elevation={3} className="supervisor-dashboard-paper">
         <Typography variant="h5" align="center" gutterBottom>
-          שלום {consultant.name || consultant.firstName}!
+          {`\u05e9\u05dc\u05d5\u05dd ${consultant?.name || consultant?.firstName || ""}!`}
         </Typography>
         <List className="supervisor-dashboard-list">
           <ListItem>
