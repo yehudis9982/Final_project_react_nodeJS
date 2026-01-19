@@ -57,12 +57,12 @@ const KindergartenList = () => {
       address: {
         street: formData.street,
         city: formData.city,
-        buildingNumber: formData.bildingNumber, // תיקון שם השדה
+        bildingNumber: parseInt(formData.bildingNumber) || 0,
         zipCode: formData.zipCode
       },
       kindergartenTeacherName: formData.kindergartenTeacherName,
       phone: formData.phone,
-      age: parseInt(formData.age) || 0 // המרה למספר
+      age: parseInt(formData.age) || 0
     };
     
     console.log("Sending payload:", payload); // לוג לבדיקה
