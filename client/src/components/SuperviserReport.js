@@ -136,7 +136,10 @@ export default function SuperviserReport() {
               const token = localStorage.getItem("token");
               if (token) {
                 const decoded = JSON.parse(atob(token.split('.')[1]));
-                if (decoded?.roles === "Supervisor") {
+                const cid = searchParams.get("consultantId");
+                if (decoded?.roles === "Supervisor" && cid) {
+                  window.location.href = "/consultants";
+                } else if (decoded?.roles === "Supervisor") {
                   window.location.href = "/supervisor-dashboard";
                 } else {
                   window.location.href = "/";
@@ -147,7 +150,7 @@ export default function SuperviserReport() {
             }}
             className="home-btn"
           >
-            ← דף הבית
+            ← {searchParams.get("consultantId") ? "רשימת יועצות" : "דף הבית"}
           </Button>
           <Typography variant="h5" align="center" sx={{ flex: 1 }}>
             דוחות שבועיים

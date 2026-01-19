@@ -171,9 +171,31 @@ const SupervisorSettings = ({ consultant }) => {
   return (
     <Box className="settings-container">
       <Paper elevation={3} className="settings-paper">
-        <Typography variant="h4" align="center" gutterBottom>
-          הגדרות מערכת
-        </Typography>
+        <Box className="settings-header" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              const token = localStorage.getItem("token");
+              if (token) {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                if (decoded?.roles === "Supervisor") {
+                  window.location.href = "/supervisor-dashboard";
+                } else {
+                  window.location.href = "/consultant-dashboard";
+                }
+              } else {
+                window.location.href = "/";
+              }
+            }}
+            className="home-btn"
+          >
+            ← דף הבית
+          </Button>
+          <Typography variant="h4" align="center" sx={{ flex: 1 }}>
+            הגדרות מערכת
+          </Typography>
+        </Box>
         {loading && (
           <Typography variant="body2" align="center" className="settings-muted">
             טוען הגדרות...

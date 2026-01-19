@@ -119,7 +119,9 @@ const TaskList = () => {
               const token = localStorage.getItem("token");
               if (token) {
                 const decoded = JSON.parse(atob(token.split('.')[1]));
-                if (decoded?.roles === "Supervisor") {
+                if (decoded?.roles === "Supervisor" && consultantId) {
+                  window.location.href = "/consultants";
+                } else if (decoded?.roles === "Supervisor") {
                   window.location.href = "/supervisor-dashboard";
                 } else {
                   window.location.href = "/consultant-dashboard";
@@ -130,7 +132,7 @@ const TaskList = () => {
             }}
             className="home-btn"
           >
-            ← דף הבית
+            ← {consultantId ? "רשימת יועצות" : "דף הבית"}
           </Button>
           <Typography variant="h6" align="center" sx={{ flex: 1 }}>
             המשימות {consultantId ? "ליועצת" : "שלי"}
