@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
 import { TextField, Button, Paper, Typography, Box, List, ListItem } from "@mui/material";
+import Footer from './Footer';
 import "../css/KindergartenList.css";
 
 const KindergartenList = () => {
@@ -286,6 +287,7 @@ const KindergartenList = () => {
           ))}
         </List>
       </Paper>
+      <Footer />
     </Box>
   );
 };

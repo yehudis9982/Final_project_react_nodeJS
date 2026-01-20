@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import ConsultantNotesModal from "./ConsultantNotesModal";
+import Footer from './Footer';
 import { Paper, Typography, Box, Button, TextField, List, ListItem, Dialog, DialogTitle, DialogContent, DialogActions, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "../css/ConsultantList.css";
@@ -382,11 +383,7 @@ const ConsultantList = () => {
         </DialogActions>
       </Dialog>
 
-      <footer className="consultant-list-footer">
-        <Typography variant="body2" align="center">
-          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
-        </Typography>
-      </footer>
+      <Footer />
     </Box>
   );
 };

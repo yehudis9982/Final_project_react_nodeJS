@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
-import { Paper, Typography, Box, Button, Chip, Collapse, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem } from "@mui/material";
+import { Paper, Typography, Box, Button, Chip, Collapse, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import Footer from './Footer';
 import "../css/WeeklyReportList.css";
 
 const WeeklyReportList = () => {
@@ -66,6 +67,7 @@ const WeeklyReportList = () => {
     />
   );
 
+  // eslint-disable-next-line no-unused-vars
   const makeEmptyDay = () => ({
     date: new Date().toISOString(),
     dayOfWeek: new Date().getDay(),
@@ -75,6 +77,7 @@ const WeeklyReportList = () => {
     tasks: [],
   });
 
+  // eslint-disable-next-line no-unused-vars
   const safeDW = (arr) =>
     (Array.isArray(arr) ? arr : []).map((d) => ({
       date: d?.date || new Date().toISOString(),
@@ -368,6 +371,7 @@ const WeeklyReportList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Footer />
     </Box>
   );
 };

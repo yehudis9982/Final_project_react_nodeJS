@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../api/axios';
 import { Paper, Typography, Box, List, ListItem, Chip, Button } from '@mui/material';
+import Footer from './Footer';
 import "../css/SupervisorNotes.css";
 
 function SupervisorNotes() {
@@ -72,6 +73,7 @@ function SupervisorNotes() {
           </List>
         )}
       </Paper>
+      <Footer />
     </Box>
   );
 }

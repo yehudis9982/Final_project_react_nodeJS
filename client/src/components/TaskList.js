@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import axios from "../api/axios";
 import { Paper, Typography, Box, Button, List, ListItem, Chip, Dialog, DialogContent, DialogActions, DialogTitle, TextField } from "@mui/material";
+import Footer from './Footer';
 import "../css/TaskList.css";
 import "../css/TaskForm.css";
 import "../css/Dialogs.css";
@@ -227,6 +228,7 @@ const TaskList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Footer />
     </Box>
   );
 };

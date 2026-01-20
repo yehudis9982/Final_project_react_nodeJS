@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "../api/axios";
+import Footer from './Footer';
 import {
   Box,
   Paper,
@@ -663,6 +664,7 @@ const SupervisorSettings = ({ consultant }) => {
           )}
         </Box>
       </Paper>
+      <Footer />
     </Box>
   );
 };

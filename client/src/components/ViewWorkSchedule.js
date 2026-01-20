@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import Footer from './Footer';
 import "../css/ViewWorkSchedule.css";
 
 const ViewWorkSchedule = () => {
@@ -125,13 +126,9 @@ const ViewWorkSchedule = () => {
           </TableContainer>
         )}
       </Paper>
-      <footer className="view-work-schedule-footer">
-        <Typography variant="body2" align="center">
-          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
-        </Typography>
-      </footer>
-    </Box>
-  );
+  <Footer />
+</Box>
+);
 };
 
 export default ViewWorkSchedule;

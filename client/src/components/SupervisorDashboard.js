@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Paper, Typography, Box, Button, List, ListItem } from "@mui/material";
+import Footer from './Footer';
 import "../css/SupervisorDashboard.css";
 
 const SupervisorDashboard = ({ consultant, onLogout }) => {
@@ -64,11 +65,7 @@ const SupervisorDashboard = ({ consultant, onLogout }) => {
           יציאה
         </Button>
       </Paper>
-      <footer className="supervisor-dashboard-footer">
-        <Typography variant="body2" align="center">
-          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
-        </Typography>
-      </footer>
+      <Footer />
     </Box>
   );
 };

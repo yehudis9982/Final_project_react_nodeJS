@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Paper, Typography, Box, Button, FormControlLabel, Checkbox, TextField } from "@mui/material";
+import Footer from './Footer';
 import "../css/UpdateWorkSchedule.css";
 
 const UpdateWorkSchedule = () => {
@@ -211,6 +212,7 @@ const UpdateWorkSchedule = () => {
           </Button>
         </form>
       </Paper>
+      <Footer />
     </Box>
   );
 };

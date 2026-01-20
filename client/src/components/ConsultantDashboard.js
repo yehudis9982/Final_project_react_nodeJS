@@ -1,5 +1,6 @@
 import React from "react";
 import { Paper, Typography, Box, List, ListItem, ListItemButton } from "@mui/material";
+import Footer from './Footer';
 import "../css/ConsultantDashboard.css";
 
 const ConsultantDashboard = ({ consultant }) => {
@@ -50,11 +51,7 @@ const ConsultantDashboard = ({ consultant }) => {
           </>
         )}
       </Paper>
-      <footer className="dashboard-footer">
-        <Typography variant="body2" align="center">
-          כל הזכויות שמורות &copy; 2025 | מערכת יועצות
-        </Typography>
-      </footer>
+      <Footer />
     </Box>
   );
 };
